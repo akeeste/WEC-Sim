@@ -17,6 +17,7 @@ simu.dt = 0.1; 							% Simulation time-step [s]
 waves = waveClass('regular');           % Initialize Wave Class and Specify Type                                 
 waves.H = 2.5;                          % Wave Height [m]
 waves.T = 8;                            % Wave Period [s]
+waves.wavegauge1loc = [50,0];
 
 % % Regular Waves with CIC
 % waves = waveClass('regularCIC');           % Initialize Wave Class and Specify Type                                 
