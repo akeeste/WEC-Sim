@@ -160,14 +160,30 @@ end
 simu.setupSim;
 
 % wave setup
-waves.waveSetup(body(1).hydroData.simulation_parameters.w, body(1).hydroData.simulation_parameters.water_depth, simu.rampTime, simu.dt, simu.maxIt, simu.g, simu.rho,  simu.endTime);
-% Check that waveDir and freq are within range of hydro data
-if  min(waves.waveDir) <  min(body(1).hydroData.simulation_parameters.wave_dir) || max(waves.waveDir) >  max(body(1).hydroData.simulation_parameters.wave_dir)
-    error('waves.waveDir outside of range of available hydro data')
-end
-if strcmp(waves.type,'etaImport')~=1 && strcmp(waves.type,'noWave')~=1 && strcmp(waves.type,'noWaveCIC')~=1
-    if  min(waves.w) <  min(body(1).hydroData.simulation_parameters.w) || max(waves.w) >  max(body(1).hydroData.simulation_parameters.w)
-        error('waves.w outside of range of available hydro data')
+if any(hydroBodLogic)
+    waves.waveSetup(body(1).hydroData.simulation_parameters.w, body(1).hydroData.simulation_parameters.water_depth, simu.rampTime, simu.dt, simu.maxIt, simu.g, simu.rho,  simu.endTime);
+
+    % Check that waveDir and freq are within range of hydro data
+    if  min(waves.waveDir) <  min(body(1).hydroData.simulation_parameters.wave_dir) || max(waves.waveDir) >  max(body(1).hydroData.simulation_parameters.wave_dir)
+        error('waves.waveDir outside of range of available hydro data')
+    end
+    if strcmp(waves.type,'etaImport')~=1 && strcmp(waves.type,'noWave')~=1 && strcmp(waves.type,'noWaveCIC')~=1
+        if  min(waves.w) <  min(body(1).hydroData.simulation_parameters.w) || max(waves.w) >  max(body(1).hydroData.simulation_parameters.w)
+            error('waves.w outside of range of available hydro data')
+        end
+    end
+else
+    % if no hydro bodies, use 0 frequency and 0 depth
+    waves.waveSetup(0, 30, simu.rampTime, simu.dt, simu.maxIt, simu.g, simu.rho,  simu.endTime);
+    
+    % Check that waveDir and freq are within range of hydro data
+    if  min(waves.waveDir) <  min(0) || max(waves.waveDir) >  max(0)
+        error('waves.waveDir outside of range of available hydro data')
+    end
+    if strcmp(waves.type,'etaImport')~=1 && strcmp(waves.type,'noWave')~=1 && strcmp(waves.type,'noWaveCIC')~=1
+        if  min(waves.w) <  min(0) || max(waves.w) >  max(0)
+            error('waves.w outside of range of available hydro data')
+        end
     end
 end
 
@@ -223,17 +239,19 @@ if waves.typeNum~=0 && waves.typeNum~=10
 end
 
 % Check that the hydro data for each body is given for the same frequencies
-for ii = 1:simu.numWecBodies
-    if length(body(1).hydroData.simulation_parameters.w) ~= length(body(ii).hydroData.simulation_parameters.w)
-        error('BEM simulations for each body must have the same number of frequencies')
-    else
-        for jj = 1:length(body(1).hydroData.simulation_parameters.w)
-            if body(1).hydroData.simulation_parameters.w(jj) ~= body(ii).hydroData.simulation_parameters.w(jj)
-                error('BEM simulations must be run with the same frequencies.')
-            end; clear jj;
+if any(hydroBodLogic)
+    for ii = 1:simu.numWecBodies
+        if length(body(1).hydroData.simulation_parameters.w) ~= length(body(ii).hydroData.simulation_parameters.w)
+            error('BEM simulations for each body must have the same number of frequencies')
+        else
+            for jj = 1:length(body(1).hydroData.simulation_parameters.w)
+                if body(1).hydroData.simulation_parameters.w(jj) ~= body(ii).hydroData.simulation_parameters.w(jj)
+                    error('BEM simulations must be run with the same frequencies.')
+                end; clear jj;
+            end
         end
-    end
-end; clear ii;
+    end; clear ii;
+end
 
 % Check for etaImport with nlHydro
 if strcmp(waves.type,'etaImport') && simu.nlHydro == 1
