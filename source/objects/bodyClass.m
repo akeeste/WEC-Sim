@@ -296,14 +296,15 @@ classdef bodyClass<handle
             else
                 tmp.fadm=diag(obj.hydroForce.fAddedMass);
                 tmp.adjmass = sum(tmp.fadm(1:3))*adjMassWeightFun;
+                tmp.adjinertia = tmp.fadm(4:6)*adjMassWeightFun;
                 obj.mass = obj.mass + tmp.adjmass;
-                obj.momOfInertia = obj.momOfInertia+tmp.fadm(4:6)';
+                obj.momOfInertia = obj.momOfInertia + tmp.adjinertia';
                 obj.hydroForce.fAddedMass(1,1) = obj.hydroForce.fAddedMass(1,1) - tmp.adjmass;
                 obj.hydroForce.fAddedMass(2,2) = obj.hydroForce.fAddedMass(2,2) - tmp.adjmass;
                 obj.hydroForce.fAddedMass(3,3) = obj.hydroForce.fAddedMass(3,3) - tmp.adjmass;
-                obj.hydroForce.fAddedMass(4,4) = 0;
-                obj.hydroForce.fAddedMass(5,5) = 0;
-                obj.hydroForce.fAddedMass(6,6) = 0;
+                obj.hydroForce.fAddedMass(4,4) = obj.hydroForce.fAddedMass(4,4) - tmp.adjinertia(1);
+                obj.hydroForce.fAddedMass(5,5) = obj.hydroForce.fAddedMass(5,5) - tmp.adjinertia(2);
+                obj.hydroForce.fAddedMass(6,6) = obj.hydroForce.fAddedMass(6,6) - tmp.adjinertia(3);
             end
         end
         
