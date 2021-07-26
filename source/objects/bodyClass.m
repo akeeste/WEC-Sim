@@ -284,18 +284,19 @@ classdef bodyClass<handle
             obj.hydroForce.storage.fAddedMass = obj.hydroForce.fAddedMass;
             if B2B == 1
                 tmp.fadm=diag(obj.hydroForce.fAddedMass(:,1+(iBod-1)*6:6+(iBod-1)*6));
-                tmp.adjmass = sum(tmp.fadm(1:3))*adjMassWeightFun;
+                tmp.adjmass = mean(tmp.fadm(1:3))*adjMassWeightFun;
+                tmp.adjinertia = tmp.fadm(4:6)*adjMassWeightFun;
                 obj.mass = obj.mass + tmp.adjmass;
                 obj.momOfInertia = obj.momOfInertia+tmp.fadm(4:6)';
                 obj.hydroForce.fAddedMass(1,1+(iBod-1)*6) = obj.hydroForce.fAddedMass(1,1+(iBod-1)*6) - tmp.adjmass;
                 obj.hydroForce.fAddedMass(2,2+(iBod-1)*6) = obj.hydroForce.fAddedMass(2,2+(iBod-1)*6) - tmp.adjmass;
                 obj.hydroForce.fAddedMass(3,3+(iBod-1)*6) = obj.hydroForce.fAddedMass(3,3+(iBod-1)*6) - tmp.adjmass;
-                obj.hydroForce.fAddedMass(4,4+(iBod-1)*6) = 0;
-                obj.hydroForce.fAddedMass(5,5+(iBod-1)*6) = 0;
-                obj.hydroForce.fAddedMass(6,6+(iBod-1)*6) = 0;
+                obj.hydroForce.fAddedMass(4,4+(iBod-1)*6) = obj.hydroForce.fAddedMass(4,4+(iBod-1)*6) - tmp.adjinertia(1);
+                obj.hydroForce.fAddedMass(5,5+(iBod-1)*6) = obj.hydroForce.fAddedMass(5,5+(iBod-1)*6) - tmp.adjinertia(1);
+                obj.hydroForce.fAddedMass(6,6+(iBod-1)*6) = obj.hydroForce.fAddedMass(6,6+(iBod-1)*6) - tmp.adjinertia(1);
             else
                 tmp.fadm=diag(obj.hydroForce.fAddedMass);
-                tmp.adjmass = sum(tmp.fadm(1:3))*adjMassWeightFun;
+                tmp.adjmass = mean(tmp.fadm(1:3))*adjMassWeightFun;
                 tmp.adjinertia = tmp.fadm(4:6)*adjMassWeightFun;
                 obj.mass = obj.mass + tmp.adjmass;
                 obj.momOfInertia = obj.momOfInertia + tmp.adjinertia';
