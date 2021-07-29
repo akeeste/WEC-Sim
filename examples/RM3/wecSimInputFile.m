@@ -4,10 +4,15 @@ simu.simMechanicsFile = 'RM3.slx';      % Specify Simulink Model File
 simu.mode = 'normal';                   % Specify Simulation Mode ('normal','accelerator','rapid-accelerator')
 simu.explorer='on';                     % Turn SimMechanics Explorer (on/off)
 simu.startTime = 0;                     % Simulation Start Time [s]
-simu.rampTime = 100;                   	% Wave Ramp Time [s]
-simu.endTime=400;                       % Simulation End Time [s]
+simu.rampTime = 10;                   	% Wave Ramp Time [s]
+simu.endTime=25;                       % Simulation End Time [s]
 simu.solver = 'ode4';                   % simu.solver = 'ode4' for fixed step & simu.solver = 'ode45' for variable step 
-simu.dt = 0.1; 							% Simulation time-step [s]
+
+simu.dt = 0.1; 						% Simulation time-step [s]
+simu.transportDelay = 1*simu.dt; % simscape should solve the acceleration accurately. This is only used to prevent an algebraic loop in simscape
+% simu.transportDelay = 1e-8; % original 1e-8
+simu.adjMassWeightFun = 1.14; % original 2, problematic/breaks at 1.14 depending on simu.dt
+simu.adjInertiaWeightFun = 0; % original 1
 
 %% Wave Information 
 % % noWaveCIC, no waves with radiation CIC  

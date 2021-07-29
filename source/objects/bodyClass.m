@@ -57,6 +57,7 @@ classdef bodyClass<handle
             'opacity', 1)                                    % Structure defining visualization properties in either SimScape or Paraview. ``color`` (`3x1 float vector`) is defined as the body visualization color, Default = [``1 1 0``]. ``opacity`` (`integer`) is defined as the body opacity, Default = ``1``.
         bodyparaview      = 1;                               % (`integer`) Flag for visualisation in Paraview either 0 (no) or 1 (yes). Default = ``1`` since only called in paraview.
         morisonElement    = struct(...                       % 
+            'on',                  0     , ...               %
             'cd',                 [0 0 0], ...               % 
             'ca',                 [0 0 0], ...               % 
             'characteristicArea', [0 0 0], ...               % 
@@ -416,10 +417,12 @@ classdef bodyClass<handle
             quiver3(c(:,1),c(:,2),c(:,3),n(:,1),n(:,2),n(:,3))
         end
         
-        function checkinputs(obj,morisonElement)
+        function checkinputs(obj)
             % This method checks WEC-Sim user inputs and generates error messages if parameters are not properly defined for the bodyClass.
             % Check h5 file
             if exist(obj.h5File,'file')==0 && obj.nhBody==0
+                error('The hdf5 file %s does not exist',obj.h5File)
+            elseif exist(obj.h5File,'file')==0 && obj.nhBody==2 && obj.morisonElement.on>0
                 error('The hdf5 file %s does not exist',obj.h5File)
             end
             % Check geometry file
@@ -427,7 +430,7 @@ classdef bodyClass<handle
                 error('Could not locate and open geometry file %s',obj.geometryFile)
             end
             % Check Morison Element Inputs for option 1
-            if morisonElement == 1
+            if obj.morisonElement.on == 1
                 [rgME,~] = size(obj.morisonElement.rgME);
                 [rz,~] = size(obj.morisonElement.z);
                 if rgME > rz
@@ -436,7 +439,7 @@ classdef bodyClass<handle
                 clear rgME rz
             end
             % Check Morison Element Inputs for option 2
-            if morisonElement == 2
+            if obj.morisonElement.on == 2
                 [r,~] = size(obj.morisonElement.z);
                 for ii = 1:r
                     if norm(obj.morisonElement.z(ii,:)) ~= 1
