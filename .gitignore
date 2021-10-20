@@ -1,5 +1,3 @@
-$ cat .gitignore
-
 # File Extensions
 *~
 *.acn
@@ -8,6 +6,7 @@ $ cat .gitignore
 *.asv
 *.autosave
 *.aux
+*.avi
 *.bak
 *.bat
 *.bbl
@@ -17,6 +16,7 @@ $ cat .gitignore
 *.dvi
 *.exp
 *.fig
+*.gif
 *.glg
 *.glo
 *.gls
@@ -41,6 +41,7 @@ $ cat .gitignore
 *.mtc3
 *.o
 *.obj
+*.ppt*
 *.slxc
 *.sublime-workspace
 *.sublime-project
@@ -60,11 +61,17 @@ $ cat .gitignore
 
 # BEMIO
 *.h5
+**/__pycache__/
+
+#Examples
+wecSimInputFile_simulinkCustomParameters.m
+**.slx.*
 
 # Tests
 /tests/**/**/*.mat
 /tests/**/*.mat
-/tests/CompilationTests/WEC-Sim_Applications
+/tests/CompilationTests/
+/tests/runFromSimulinkTests/
 !/tests/**/**/regular_org.mat
 !/tests/**/**/regularCIC_org.mat
 !/tests/**/**/regularSS_org.mat
@@ -84,3 +91,4 @@ docs/_build
 .DS_Store
 view_html.sh
 *vis-temp*
+*.pyc

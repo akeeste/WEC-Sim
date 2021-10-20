@@ -207,8 +207,10 @@ Step 5: Post-processing
 The RM3 tutorial includes a ``userDefinedFunctions.m`` which plots RM3 
 forces and responses. This file can be modified by users for 
 post-processing. Additionally, once the WEC-Sim run is complete, the 
-WEC-Sim results are saved to the **output** variable in the MATLAB 
+WEC-Sim results are saved to the ``output`` variable in the MATLAB 
 workspace. 
+
+.. _user-tutorials-oswec:
 
 Oscillating Surge WEC (OSWEC)
 -----------------------------
@@ -230,7 +232,7 @@ hinge to the base that restricts the flap in order to pitch about the hinge.
 The full-scale dimensions and mass properties of the OSWEC are shown below. 
 
 .. figure:: /_static/images/OSWEC_Geom.png
-   :width: 300pt
+   :width: 600pt
    :align: center
 
 +-------+---------------+
@@ -374,10 +376,12 @@ Additionally, once the WEC-Sim run is complete, the WEC-Sim results are saved
 to the **output** variable in the MATLAB workspace. 
 
 
+.. _user-tutorials-examples:
+
 WEC-Sim Examples
 ----------------
 
-Working examples of using WEC-Sim to model the RM3 and OSWEC are provided in 
+Working examples of using WEC-Sim to model the RM3, OSWEC, and RM3FromSimulink are provided in 
 the ``$WECSIM/examples/`` directory. For each example the ``wecSimInputFile.m`` 
 provided includes examples of how to run different wave cases: 
 
@@ -387,6 +391,19 @@ provided includes examples of how to run different wave cases:
 * ``irregular`` - irregular waves using a Bretschneider Spectrum with state space calculation
 * ``spectrumImport`` - irregular waves using a user-defined spectrum
 * ``etaImport`` - user-defined time-series
+
+
+* Run from MATLAB Command Window (for RM3 and OSWEC examples)
+	* Type ``wecSim`` in the Command Window
+* Run from Simulink (for RM3FromSimulink example)
+	* Open the relevant WEC-Sim Simulink file
+	* Type ``initializeWecSim`` in the Command Window
+	* Hit Play in Simulink model to run 
+
+To customize or develop a new WEC-Sim model that runs from Simulink (e.g. for Hardware-in-the-Loop, HIL, applications) refer to :ref:`user-advanced-features-simulink` for more information.
+Users may also use ``wecSimMCR``, ``wecSimPCT``, ``wecSimFcn`` and  as described in the advanced features 
+sections :ref:`user-advanced-features-mcr` and :ref:`user-advanced-features-pct`. 
+These options are only available through the MATLAB Command Window.
 
 References
 ------------------------

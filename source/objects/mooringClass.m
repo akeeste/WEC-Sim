@@ -17,8 +17,15 @@
 % limitations under the License.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 classdef mooringClass<handle
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % The ``mooringClass`` creates a ``mooring`` object saved to the MATLAB
+    % workspace. The ``mooringClass`` includes properties and methods used
+    % to define cable connections relative to other bodies.
+    % It is suggested that the ``mooringClass`` be used for connections between
+    % bodies and the global reference frame.
+    % 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     % This class contains mooring parameters and settings
     properties (SetAccess = 'public', GetAccess = 'public')%input file 
         name                    = 'NOT DEFINED'                                 % (`string`) Name of the mooring. Default = ``'NOT DEFINED'``
@@ -39,7 +46,6 @@ classdef mooringClass<handle
         loc                     = []                                            % (`float 1 x 6`) Initial 6DOF location. Default = ``[0 0 0 0 0 0]``
         mooringNum              = []                                            % (`integer`) Mooring number. Default = ``'NOT DEFINED'``
         moorDyn                 = 0                                             % (`integer`) Flag to indicate a MoorDyn block, 0 or 1. Default = ``0``
-        moorDynInputRaw         = []                                            % (`string`) MoorDyn input file, each line read as a string into a cell array. Default = ``'NOT DEFINED'``
     end
 
     methods (Access = 'public')                                        
@@ -53,38 +59,55 @@ classdef mooringClass<handle
             obj.loc = [obj.ref + obj.initDisp.initLinDisp 0 0 0];
         end
 
-        function setInitDisp(obj, x_rot, ax_rot, ang_rot, addLinDisp)
-            % Method to set the initial displacement with an initial rotation
+        function setInitDisp(obj, relCoord, axisAngleList, addLinDisp)
+            % Function to set a mooring's initial displacement
+            % 
+            % This function assumes that all rotations are about the same relative coordinate. 
+            % If not, the user should input a relative coordinate of 0,0,0 and 
+            % use the additional linear displacement parameter to set the cg or loc
+            % correctly.
             %
             % Parameters
             % ------------
-            %    x_rot : 3 x 1 float vector
-            %        displacement of mooring reference
+            %    relCoord : [1 3] float vector
+            %        Distance from x_rot to the body center of gravity or the constraint
+            %        or pto location as defined by: relCoord = cg - x_rot. [m]
             %
-            %    ax_rot : 3 x 1 float vector 
-            %       axis about which to rotate (must be a normal vector)
+            %    axisAngleList : [nAngle 4] float vector
+            %        List of axes and angles of the rotations with the 
+            %        format: [n_x n_y n_z angle] (angle in rad)
+            %        Rotations applied consecutively in order of dimension 1
             %
-            %    ang_rot : float  
-            %       rotation displacement (radians)
-            %
-            %    addLinDisp : 3 x 1 float vector
-            %       initial linear displacement (additional to rotation-induced displacement)
-            %
-            loc = obj.ref;
-            relCoord = loc - x_rot;
-            rotatedRelCoord = rotateXYZ(relCoord,ax_rot,ang_rot);
-            newCoord = rotatedRelCoord + x_rot;
-            linDisp = newCoord-loc;
-            obj.initDisp.initLinDisp= linDisp + addLinDisp; 
-            obj.initDisp.initAngularDispAxis = ax_rot;
-            obj.initDisp.initAngularDispAngle = ang_rot;
-        end
+            %    addLinDisp : [1 3] float vector
+            %        Initial linear displacement (in addition to the 
+            %        displacement caused by rotation) [m]
+            % 
+            
+            % initialize quantities before for loop
+            axisList = axisAngleList(:,1:3);
+            angleList = axisAngleList(:,4);
+            nAngle = size(axisList,1);
+            rotMat = eye(3);
+            
+            % Loop through all axes and angles.
+            for i=1:nAngle
+                rotMat = axisAngle2RotMat(axisList(i,:),angleList(i))*rotMat;
+            end
 
-        function obj = moorDynInput(obj)
-            % Method to read MoorDyn input file
-            obj.moorDynInputRaw = textread('./mooring/lines.txt', '%s', 'delimiter', '\n');
-        end
+            % calculate net axis-angle rotation
+            [netAxis, netAngle] = rotMat2AxisAngle(rotMat);
 
+            % calculate net displacement due to rotation
+            rotatedRelCoord = relCoord*(rotMat');
+            linDisp = rotatedRelCoord - relCoord;
+
+            % apply rotation and displacement to object
+            obj.initDisp.initLinDisp = linDisp + addLinDisp;
+            obj.initDisp.initAngularDispAxis = netAxis;
+            obj.initDisp.initAngularDispAngle = netAngle;
+            
+        end
+        
         function listInfo(obj)
             % Method to list mooring info
             fprintf('\n\t***** Mooring Name: %s *****\n',obj.name)
