@@ -63,7 +63,6 @@ classdef simulationClass<handle
         saveText            = 0                                            % (`integer`) Option to save results as ASCII files off->0, on->1. Default = ``0``
         saveWorkspace       = 1                                            % (`integer`) Option to save .mat file for each run: off->0, on->1. Default = ``1``
         pressureDis         = 0                                            % (`integer`) Option to save pressure distribution: off->0, on->1. Default = ``0``
-        waterDepth          = 0                                            % (`float`) Water depth in meters. This value is only used when no hydrodynamic bodies are defined.
     end
 
     properties (SetAccess = 'public', GetAccess = 'public')%internal
