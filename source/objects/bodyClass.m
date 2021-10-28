@@ -491,7 +491,7 @@ classdef bodyClass<handle
             end
             
             % Check Morison Element Inputs for option 1
-            if obj.morisonElement.on == 1
+            if obj.morisonElement.option == 1
                 [rgME,~] = size(obj.morisonElement.rgME);
                 [rz,~] = size(obj.morisonElement.z);
                 if rgME > rz
@@ -501,7 +501,7 @@ classdef bodyClass<handle
             end
             
             % Check Morison Element Inputs for option 2
-            if obj.morisonElement.on == 2
+            if obj.morisonElement.option == 2
                 [r,~] = size(obj.morisonElement.z);
                 for ii = 1:r
                     if norm(obj.morisonElement.z(ii,:)) ~= 1
@@ -512,6 +512,8 @@ classdef bodyClass<handle
             
             % Check flexible beam inputs
             if obj.flexBeam.option ~= 0 && obj.nhBody == 0 
+                error(['Hydrodynamic flexible beam in development. ' ...
+                    'Only nonhydro and drag flexible beams are currently allowed']);
                 if obj.adjMassWeightFun ~= 0 && obj.adjInertiaWeightFun ~= 0
                     error(['Bodies that are hydrodynamic flexible beams must use '...
                         'adjMassWeightFun = 0 and adjInertiaWeightFun = 0.']);
