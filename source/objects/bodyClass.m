@@ -71,7 +71,10 @@ classdef bodyClass<handle
         flexHydroBody     = 0                                % (`integer`) Flag for flexible body either 0 (no) or 1 (yes). Default = ``0``.
         meanDriftForce    = 0                                % (`integer`) Flag for mean drift force with three options:  0 (no), 1 (yes, from control surface) or 2 (yes, from momentum conservation). Default = ``0``.
         nlHydro           = 0                                % (`integer`) Option for nonlinear hydrohanamics calculation: linear->0, nonlinear->1,2. Default = ``0``
+        adjMassWeightFun  = 2                                % (`integer`) Weighting function for adjusting added mass term in the translational directions. Default = ``2``
+        adjInertiaWeightFun = 1                              % (`integer`) Weighting function for adjusting added mass term in the rotational directions. Default = ``1``
         flexBeam          = struct(...                       % 
+            'option',              0, ...                    %
             'radius',              0, ...                    % 
             'thickness',           0, ...                    % 
             'length',              0, ...                    % 
@@ -79,7 +82,7 @@ classdef bodyClass<handle
             'E',                   0, ...                    %
             'v',                   0, ...                    %
             'dampingRatio',        0, ...                    %
-            'nElements',           0)                        % Structure defining the body's cylindrical flexible beam parameters. ``radius`` (`1x1 integer`) outer radius of the beam [m], Default = ``0``. ``thickness`` (`1x1 integer`) radial thickness of the beam [m], Default = ``0``. ``length`` (`1x1 integer`) axial length of the beam [m], Default = ``0``. ``rho`` (`1x1 integer`) density of the beam [kg/m^3], Default = ``0``. ``E`` (`1x1 integer`) Young's modulus of the beam [N/m^2], Default = ``0``. ``v`` (`1x1 integer`) Poisson ratio of the beam [-], Default = ``0``. ``dampingRatio`` (`1x1 integer`) Damping ratio used to define the structural damping of the beam [-], Default = ``0``. ``nElements`` (`1x1 integer`) Number of elements used to discretize the length of the beam. More elements increases accuracy but at computational expense [-], Default = ``1``.
+            'nElements',           0)                        % Structure defining the body's cylindrical flexible beam parameters. ``option`` (`1x1 integer`) flag for flexible beam body: 0 or 1, default = ``0``. (``radius`` (`1x1 integer`) outer radius of the beam [m], Default = ``0``. ``thickness`` (`1x1 integer`) radial thickness of the beam [m], Default = ``0``. ``length`` (`1x1 integer`) axial length of the beam [m], Default = ``0``. ``rho`` (`1x1 integer`) density of the beam [kg/m^3], Default = ``0``. ``E`` (`1x1 integer`) Young's modulus of the beam [N/m^2], Default = ``0``. ``v`` (`1x1 integer`) Poisson ratio of the beam [-], Default = ``0``. ``dampingRatio`` (`1x1 integer`) Damping ratio used to define the structural damping of the beam [-], Default = ``0``. ``nElements`` (`1x1 integer`) Number of elements used to discretize the length of the beam. More elements increases accuracy but at computational expense [-], Default = ``1``.
     end
     
     properties (SetAccess = 'public', GetAccess = 'public')  %body geometry stl file
@@ -294,7 +297,7 @@ classdef bodyClass<handle
             end
         end
         
-        function adjustMassMatrix(obj,adjMassWeightFun,B2B)
+        function adjustMassMatrix(obj,B2B)
             % Merge diagonal term of added mass matrix to the mass matrix
             % 1. Store the original mass and added-mass properties
             % 2. Add diagonal added-mass inertia to moment of inertia
@@ -305,27 +308,29 @@ classdef bodyClass<handle
             obj.hydroForce.storage.momOfInertia = obj.momOfInertia;
             obj.hydroForce.storage.fAddedMass = obj.hydroForce.fAddedMass;
             if B2B == 1
-                tmp.fadm=diag(obj.hydroForce.fAddedMass(:,1+(iBod-1)*6:6+(iBod-1)*6));
-                tmp.adjmass = mean(tmp.fadm(1:3))*adjMassWeightFun;
+                tmp.fadm = diag(obj.hydroForce.fAddedMass(:,1+(iBod-1)*6:6+(iBod-1)*6));
+                tmp.adjmass = mean(tmp.fadm(1:3))*obj.adjMassWeightFun;
+                tmp.adjinertia = tmp.fadm(4:6)*obj.adjInertiaWeightFun;
                 obj.mass = obj.mass + tmp.adjmass;
-                obj.momOfInertia = obj.momOfInertia+tmp.fadm(4:6)';
+                obj.momOfInertia = obj.momOfInertia + tmp.adjinertia';
                 obj.hydroForce.fAddedMass(1,1+(iBod-1)*6) = obj.hydroForce.fAddedMass(1,1+(iBod-1)*6) - tmp.adjmass;
                 obj.hydroForce.fAddedMass(2,2+(iBod-1)*6) = obj.hydroForce.fAddedMass(2,2+(iBod-1)*6) - tmp.adjmass;
                 obj.hydroForce.fAddedMass(3,3+(iBod-1)*6) = obj.hydroForce.fAddedMass(3,3+(iBod-1)*6) - tmp.adjmass;
-                obj.hydroForce.fAddedMass(4,4+(iBod-1)*6) = 0;
-                obj.hydroForce.fAddedMass(5,5+(iBod-1)*6) = 0;
-                obj.hydroForce.fAddedMass(6,6+(iBod-1)*6) = 0;
+                obj.hydroForce.fAddedMass(4,4+(iBod-1)*6) = obj.hydroForce.fAddedMass(4,4+(iBod-1)*6) - tmp.adjinertia(1);
+                obj.hydroForce.fAddedMass(5,5+(iBod-1)*6) = obj.hydroForce.fAddedMass(5,5+(iBod-1)*6) - tmp.adjinertia(2);
+                obj.hydroForce.fAddedMass(6,6+(iBod-1)*6) = obj.hydroForce.fAddedMass(6,6+(iBod-1)*6) - tmp.adjinertia(3);
             else
-                tmp.fadm=diag(obj.hydroForce.fAddedMass);
-                tmp.adjmass = mean(tmp.fadm(1:3))*adjMassWeightFun;
+                tmp.fadm = diag(obj.hydroForce.fAddedMass);
+                tmp.adjmass = mean(tmp.fadm(1:3))*obj.adjMassWeightFun;
+                tmp.adjinertia = tmp.fadm(4:6)*obj.adjInertiaWeightFun;
                 obj.mass = obj.mass + tmp.adjmass;
-                obj.momOfInertia = obj.momOfInertia+tmp.fadm(4:6)';
+                obj.momOfInertia = obj.momOfInertia + tmp.adjinertia';
                 obj.hydroForce.fAddedMass(1,1) = obj.hydroForce.fAddedMass(1,1) - tmp.adjmass;
                 obj.hydroForce.fAddedMass(2,2) = obj.hydroForce.fAddedMass(2,2) - tmp.adjmass;
                 obj.hydroForce.fAddedMass(3,3) = obj.hydroForce.fAddedMass(3,3) - tmp.adjmass;
-                obj.hydroForce.fAddedMass(4,4) = 0;
-                obj.hydroForce.fAddedMass(5,5) = 0;
-                obj.hydroForce.fAddedMass(6,6) = 0;
+                obj.hydroForce.fAddedMass(4,4) = obj.hydroForce.fAddedMass(4,4) - tmp.adjinertia(1);
+                obj.hydroForce.fAddedMass(5,5) = obj.hydroForce.fAddedMass(5,5) - tmp.adjinertia(2);
+                obj.hydroForce.fAddedMass(6,6) = obj.hydroForce.fAddedMass(6,6) - tmp.adjinertia(3);
             end
         end
         
@@ -479,10 +484,12 @@ classdef bodyClass<handle
             elseif exist(obj.h5File,'file')==0 && obj.nhBody==2 && obj.morisonElement.on>0
                 error('The hdf5 file %s does not exist',obj.h5File)
             end
+            
             % Check geometry file
             if exist(obj.geometryFile,'file') == 0
                 error('Could not locate and open geometry file %s',obj.geometryFile)
             end
+            
             % Check Morison Element Inputs for option 1
             if obj.morisonElement.on == 1
                 [rgME,~] = size(obj.morisonElement.rgME);
@@ -492,6 +499,7 @@ classdef bodyClass<handle
                 end
                 clear rgME rz
             end
+            
             % Check Morison Element Inputs for option 2
             if obj.morisonElement.on == 2
                 [r,~] = size(obj.morisonElement.z);
@@ -499,6 +507,14 @@ classdef bodyClass<handle
                     if norm(obj.morisonElement.z(ii,:)) ~= 1
                         error(['Ensure the Morison Element .z variable is a unit vector for the ',num2str(ii),' index'])
                     end
+                end
+            end
+            
+            % Check flexible beam inputs
+            if obj.flexBeam.option ~= 0 && obj.nhBody == 0 
+                if obj.adjMassWeightFun ~= 0 && obj.adjInertiaWeightFun ~= 0
+                    error(['Bodies that are hydrodynamic flexible beams must use '...
+                        'adjMassWeightFun = 0 and adjInertiaWeightFun = 0.']);
                 end
             end
         end

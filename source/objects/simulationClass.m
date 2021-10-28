@@ -56,7 +56,6 @@ classdef simulationClass<handle
         EndTimeParaview     = 100;                                         % (`float`) End time for the vtk file of Paraview. Default = ``0``                                      
         dtParaview          = 0.1;                                         % (`float`) Timestep for Paraview. Default = ``0.1``         
         pathParaviewVideo   = 'vtk';                                       % (`string`) Path of the folder for Paraview vtk files. Default = ``'vtk'``     
-        adjMassWeightFun    = 2                                            % (`integer`) Weighting function for adjusting added mass term in the translational direction. Default = ``2``
         mcrCaseFile         = []                                           % (`string`) mat file that contain a list of the multiple conditions runs with given conditions. Default = ``'NOT DEFINED'``  
         reloadH5Data        = 0                                            % (`integer`) Option to re-load hydro data from hf5 file between runs: off->0, on->1. Default = ``0``
         saveStructure       = 0                                            % (`integer`) Option to save results as a MATLAB structure: off->0, on->1. Default = ``1``

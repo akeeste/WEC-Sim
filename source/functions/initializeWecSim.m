@@ -140,7 +140,7 @@ end
 simu.numWecBodies = numHydroBodies; clear numHydroBodies
 simu.numDragBodies = numDragBodies; clear numDragBodies
 for ii = 1:simu.numWecBodies
-    body(ii).checkinputs(body(ii).morisonElement.option);
+    body(ii).checkinputs();
     %Determine if hydro data needs to be reloaded from h5 file, or if hydroData
     % was stored in memory from a previous run.
     if exist('totalNumOfWorkers','var') ==0 && exist('mcr','var') == 1 && simu.reloadH5Data == 0 && imcr > 1
@@ -444,7 +444,7 @@ tic
 fprintf('\nSimulating the WEC device defined in the SimMechanics model %s...   \n',simu.simMechanicsFile)
 % Modify some stuff for simulation
 for iBod = 1:simu.numWecBodies
-    body(iBod).adjustMassMatrix(simu.adjMassWeightFun,simu.b2b);
+    body(iBod).adjustMassMatrix(simu.b2b);
 end; clear iBod
 warning('off','Simulink:blocks:TDelayTimeTooSmall');
 warning('off','Simulink:blocks:BusSelDupBusCreatorSigNames');
