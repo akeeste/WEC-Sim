@@ -512,10 +512,10 @@ classdef bodyClass<handle
             
             % Check flexible beam inputs
             if obj.flexBeam.option ~= 0 
-                if obj.nhBody == 0 
-                    error(['Hydrodynamic flexible beam in development. ' ...
-                        'Only nonhydro and drag flexible beams are currently allowed']);
-                end
+%                 if obj.nhBody == 0 
+%                     error(['Hydrodynamic flexible beam in development. ' ...
+%                         'Only nonhydro and drag flexible beams are currently allowed']);
+%                 end
                 if obj.adjMassWeightFun ~= 0 || obj.adjInertiaWeightFun ~= 0
                     error(['Bodies that are hydrodynamic flexible beams must use '...
                         'adjMassWeightFun = 0 and adjInertiaWeightFun = 0.']);
@@ -525,9 +525,9 @@ classdef bodyClass<handle
                 ro = obj.flexBeam.radius;
                 ri = obj.flexBeam.radius-obj.flexBeam.thickness;
                 obj.mass = obj.flexBeam.length*pi*(ro^2-ri^2);
-                obj.momOfInertia(1) = massCheck*obj.flexBeam.length/2;
-                obj.momOfInertia(2) = massCheck*obj.flexBeam.length/2;
-                obj.momOfInertia(3) = 1/2*massCheck*(ro^2+ri^2);
+                obj.momOfInertia(1) = obj.mass*obj.flexBeam.length/2;
+                obj.momOfInertia(2) = obj.mass*obj.flexBeam.length/2;
+                obj.momOfInertia(3) = 1/2*obj.mass*(ro^2+ri^2);
 %                 if obj.mass ~= massCheck
 %                     warning(['Body mass does not equal that based on the' ...
 %                         ' flexible beam geometry. Check mass calculation'...
