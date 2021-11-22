@@ -227,8 +227,9 @@ classdef waveClass<handle
                     end
                     obj.H = 0;
                     obj.A = obj.H/2;
+                    obj.phase = zeros(length(obj.waveDir),1);
                     obj.waveNumber(g);
-                    obj.waveElevNowave(time);
+                    obj.waveElev(rampTime, time);
                 case {'regular','regularCIC'}
                     if isempty(obj.w) && strcmp(obj.T,'NOT DEFINED')
                         obj.w = min(obj.freqRange);
@@ -239,8 +240,9 @@ classdef waveClass<handle
                         obj.T = 2*pi/obj.w;
                     end
                     obj.A = obj.H/2;
+                    obj.phase = zeros(length(obj.waveDir),1);
                     obj.waveNumber(g);
-                    obj.waveElevReg(rampTime, time);
+                    obj.waveElev(rampTime, time);
                     obj.wavePowerReg(g,rho);
                 case {'irregular','spectrumImport'}
                     if strcmp(obj.type,'spectrumImport')
@@ -278,7 +280,7 @@ classdef waveClass<handle
                     obj.setWavePhase;
                     obj.irregWaveSpectrum(g,rho)
                     obj.waveNumber(g)
-                    obj.waveElevIrreg(rampTime, time, obj.dw);
+                    obj.waveElev(rampTime, time);
                 case {'etaImport'}    %  This does not account for wave direction
                     % Import 'etaImport' time-series here and interpolate
                     data = importdata(obj.etaDataFile) ;    % Import time-series
@@ -301,20 +303,12 @@ classdef waveClass<handle
             %     timeseries : float array
             %         Array of all simulation output time steps
             %
-            switch obj.type
-                case {'noWave','noWaveCIC'}                    
-                    obj.waveElevNowave(timeseries);
-
-                case {'regular','regularCIC'}
-                    obj.waveElevReg(rampTime, timeseries);
-
-                case {'irregular','spectrumImport'}
-                    obj.waveElevIrreg(rampTime, timeseries, obj.dw);
-
-                case {'etaImport'}
-                    % Wave elevation is a necessary pre-processing step for
-                    % the eta import case.
-                    % Used by waveClass.waveSetup()
+            if ~strcmp(obj.type,'etaImport')
+                obj.waveElev(rampTime, timeseries);
+            else
+                % Wave elevation is a necessary pre-processing step for
+                % the eta import case.
+                % Used by waveClass.waveSetup()
             end
         end        
         
@@ -525,47 +519,33 @@ classdef waveClass<handle
             end
         end
         
-        function waveElevNowave(obj,timeseries)
-            % Set noWave elevation time-history
-            % Used by waveSetup                    
-            % Used by postProcess for variable step solvers
-            obj.waveAmpTime         = zeros(length(timeseries),2);
-            obj.waveAmpTime(:,1)    = timeseries;
-            
-            if ~isempty(obj.markerLoc)
-                SZwaveAmpTimeViz = size(obj.markerLoc);
-                obj.waveAmpTimeViz = zeros(length(timeseries),SZwaveAmpTimeViz(1)+1);
-                obj.waveAmpTimeViz(:,1) = timeseries;
-            end
-        end
-        
-        function waveElevReg(obj,rampTime,timeseries)
+        function waveElev(obj,rampTime,timeseries)
             % Calculate regular wave elevation time history
             % Used by waveSetup                    
             % Used by postProcess for variable step solvers
             maxIt = length(timeseries);
-            rampFunction = (1+cos(pi+pi*timeseries/rampTime))/2;
-            rampFunction(timeseries>rampTime) = 1;
+            ramp = rampFunction(timeseries,rampTime);
+            ramp = ramp(:); % turn to size (nt,1) so that dimensions work with wave elevation;
 
             obj.waveAmpTime = zeros(maxIt,2);
             obj.waveAmpTime(:,1) = timeseries;
-            obj.waveAmpTime(:,2) = rampFunction.*(obj.A*cos(obj.w*timeseries));
+            obj.waveAmpTime(:,2) = ramp.*waveElevation(obj.A,obj.w,obj.dw,timeseries,obj.k,0,0,obj.waveDir,obj.waveSpread,obj.phase,obj.typeNum);
 
             % Wave Gauges
             if ~any(isnan(obj.wavegauge1loc))
                 obj.waveAmpTime1 = zeros(maxIt,2);
                 obj.waveAmpTime1(:,1) = timeseries;
-                obj.waveAmpTime1(:,2) = rampFunction.*obj.A.*cos(obj.w*timeseries - obj.k*(obj.wavegauge1loc(1).*cos(obj.waveDir*pi/180) + obj.wavegauge1loc(2).*sin(obj.waveDir*pi/180)));
+                obj.waveAmpTime1(:,2) = ramp.*waveElevation(obj.A,obj.w,obj.dw,timeseries,obj.k,obj.wavegauge1loc(1),obj.wavegauge1loc(2),obj.waveDir,obj.waveSpread,obj.phase,obj.typeNum);
             end
             if ~any(isnan(obj.wavegauge2loc))
                 obj.waveAmpTime2 = zeros(maxIt,2);
                 obj.waveAmpTime2(:,1) = timeseries;
-                obj.waveAmpTime2(:,2) = rampFunction.*obj.A.*cos(obj.w*timeseries - obj.k*(obj.wavegauge2loc(1).*cos(obj.waveDir*pi/180) + obj.wavegauge2loc(2).*sin(obj.waveDir*pi/180)));
+                obj.waveAmpTime2(:,2) = ramp.*waveElevation(obj.A,obj.w,obj.dw,timeseries,obj.k,obj.wavegauge2loc(1),obj.wavegauge2loc(2),obj.waveDir,obj.waveSpread,obj.phase,obj.typeNum);
             end
             if ~any(isnan(obj.wavegauge3loc))
                 obj.waveAmpTime3 = zeros(maxIt,2);
                 obj.waveAmpTime3(:,1) = timeseries;
-                obj.waveAmpTime3(:,2) = rampFunction.*obj.A.*cos(obj.w*timeseries - obj.k*(obj.wavegauge3loc(1).*cos(obj.waveDir*pi/180) + obj.wavegauge3loc(2).*sin(obj.waveDir*pi/180)));
+                obj.waveAmpTime3(:,2) = ramp.*waveElevation(obj.A,obj.w,obj.dw,timeseries,obj.k,obj.wavegauge3loc(1),obj.wavegauge3loc(2),obj.waveDir,obj.waveSpread,obj.phase,obj.typeNum);
             end
             
             % Wave Marker
@@ -579,7 +559,7 @@ classdef waveClass<handle
                 obj.waveAmpTimeViz = zeros(maxIt,SZwaveAmpTimeViz(1)+1);
                 for j = 1:SZwaveAmpTimeViz(1)
                     obj.waveAmpTimeViz(:,1) = timeseries;
-                    obj.waveAmpTimeViz(:,j+1) = rampFunction.*obj.A.*cos(obj.w*timeseries - obj.k*(obj.markerLoc(j,1).*cos(obj.waveDir*pi/180) + obj.markerLoc(j,2).*sin(obj.waveDir*pi/180)));                   
+                    obj.waveAmpTimeViz(:,j+1) = ramp.*waveElevation(obj.A,obj.w,obj.dw,timeseries,obj.k,obj.markerLoc(j,1),obj.markerLoc(j,2),obj.waveDir,obj.waveSpread,obj.phase,obj.typeNum);
                 end
             end          
         end        
@@ -678,81 +658,11 @@ classdef waveClass<handle
             end
             obj.A = 2 * obj.S;                                              % Wave Amplitude [m]
         end
-
-        function waveElevIrreg(obj,rampTime,timeseries,df)
-            % Calculate irregular wave elevetaion time history
-            % Used by waveSetup
-            % Used by postProcess for variable time step 
-            maxIt = length(timeseries);
-            rampFunction = (1+cos(pi+pi*timeseries/rampTime))/2;
-            rampFunction(timeseries>rampTime) = 1;
-
-            obj.waveAmpTime = zeros(maxIt,2);
-            obj.waveAmpTime(:,1) = timeseries;
-
-            % Wave Gauges
-            if ~isnan(obj.wavegauge1loc)
-                obj.waveAmpTime1 = zeros(maxIt,2);
-                obj.waveAmpTime1(:,1) = timeseries;
-            end
-            if ~isnan(obj.wavegauge2loc)
-                obj.waveAmpTime2 = zeros(maxIt,2);
-                obj.waveAmpTime2(:,1) = timeseries;
-            end
-            if ~isnan(obj.wavegauge3loc)
-               obj.waveAmpTime3 = zeros(maxIt,2);
-               obj.waveAmpTime3(:,1) = timeseries;
-            end
-            
-            %  Wave Markers
-            if ~isempty(obj.markerLoc)
-                if width(obj.markerLoc)~=2
-                    error('The coordinates of the visualization markers should have an ordinate (y-coordinate) and an abscissa (x-coordinate)')
-                end
-            end                              
-            if ~isempty(obj.markerLoc)
-               SZwaveAmpTimeViz = size(obj.markerLoc);
-               obj.waveAmpTimeViz = zeros(maxIt,SZwaveAmpTimeViz(1)+1);
-               obj.waveAmpTimeViz(:,1) = timeseries;
-            end            
-            
-            % Calculate eta
-            for i = 1:length(timeseries)
-                tmp  = sqrt(obj.A.*df*obj.waveSpread);
-                tmp1 = tmp.*real(exp(sqrt(-1).*(obj.w.*timeseries(i) + obj.phase)));
-                obj.waveAmpTime(i,2) = rampFunction(i)*sum(tmp1,'all');
-
-                % Wave Gauges
-                if ~isnan(obj.wavegauge1loc)
-                    tmp11 = tmp.*real(exp(sqrt(-1).*(obj.w.*timeseries(i) - obj.k*(obj.wavegauge1loc(1).*cos(obj.waveDir*pi/180) + obj.wavegauge1loc(2).*sin(obj.waveDir*pi/180)) + obj.phase)));
-                    obj.waveAmpTime1(i,2) = rampFunction(i).*sum(tmp11,'all');
-                end
-
-                if ~isnan(obj.wavegauge2loc)
-                    tmp12 = tmp.*real(exp(sqrt(-1).*(obj.w.*timeseries(i) - obj.k*(obj.wavegauge2loc(1).*cos(obj.waveDir*pi/180) + obj.wavegauge2loc(2).*sin(obj.waveDir*pi/180)) + obj.phase)));
-                    obj.waveAmpTime2(i,2) = rampFunction(i)*sum(tmp12,'all');
-                end
-
-                if ~isnan(obj.wavegauge3loc)
-                    tmp13 = tmp.*real(exp(sqrt(-1).*(obj.w.*timeseries(i) - obj.k*(obj.wavegauge3loc(1).*cos(obj.waveDir*pi/180) + obj.wavegauge3loc(2).*sin(obj.waveDir*pi/180)) + obj.phase)));
-                    obj.waveAmpTime3(i,2) = rampFunction(i)*sum(tmp13,'all');
-                end
-                
-                % Wave Markers
-                if ~isempty(obj.markerLoc)
-                    for j = 1:SZwaveAmpTimeViz(1)
-                        tmp14 = tmp.*real(exp(sqrt(-1).*(obj.w.*timeseries(i) - obj.k*(obj.markerLoc(j,1).*cos(obj.waveDir*pi/180) + obj.markerLoc(j,2).*sin(obj.waveDir*pi/180)) + obj.phase)));
-                        obj.waveAmpTimeViz(i,j+1) = rampFunction(i).*sum(tmp14,'all');
-                    end             
-                end                                                                       
-            end
-        end        
         
         function waveElevUser(obj,rampTime,dt,maxIt,data,time)
             % Calculate imported wave elevation time history
             % Used by waveSetup
-            rampFunction = (1+cos(pi+pi*time/rampTime))/2;
-            rampFunction(time>rampTime) = 1;
+            rampFunction = rampFunction(time,rampTime);
             
             obj.waveAmpTime = zeros(maxIt+1,2);
             data_t = data(:,1)';                    % Data Time [s]

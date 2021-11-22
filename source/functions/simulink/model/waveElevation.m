@@ -1,40 +1,36 @@
-function f  = waveElevation(x,center,cg,AH,w,dw,k,typeNum,t,rampT,phaseRand,waveDir)
-% Function to calculate the wave elevation at the ceontroids of triangulated surface
-% NOTE: This function assumes that the STL file is imported with its CG at 0,0,0
-f = calc_elev(x,center,cg,AH,w,dw,k,typeNum,t,rampT,phaseRand, waveDir);
-end
+function elevation = waveElevation(A,w,dw,time,k,x,y,waveDir,waveSpread,phaseRand,typeNum)
+% Calculates the wave elevation at a point in space with given wave properties. 
+% 
+% Note: cannot input multiple time steps and multiple locations at once.
+% i.e. Simulink nonlinear wave elevation inputs multiple locations (stl
+% centers) while the pre/post-processing input multiple times at a single
+% wave gauge location
 
-function f = calc_elev(x,center,cg,AH,w,dw,k,typeNum,t,rampT,phaseRand,waveDir)
-% Function to rotate and translate body and call wave elevation function at new locations
+% Reshape variables so that their dimensions work together. New dimensions
+% should be:
+% [nXPoints, nDirections, nFrequencies] or [nTimesteps, nDirections, nFrequencies];
+totalSize = ones(length(x), length(waveDir), length(A));
+x = reshape(x,[length(x) 1 1]);
+y = reshape(y,[length(y) 1 1]);
+time = reshape(time,[length(time) 1 1]);
+A = reshape(A,[1 1 length(A)]);
+w = reshape(w,[1 1 length(w)]);
+dw = reshape(dw,[1 1 length(dw)]);
+k = reshape(k,[1 1 length(k)]);
+phaseRand = reshape(phaseRand,[1 length(waveDir) length(A)]);
+waveDir = reshape(waveDir,[1 length(waveDir) 1]);
+waveSpread = reshape(waveSpread,[1 length(waveSpread) 1]);
 
-% Compute new tri center coords after cog rotation and translation
-center = rotateXYZ(center,[1 0 0],x(4));
-center = rotateXYZ(center,[0 1 0],x(5));
-center = rotateXYZ(center,[0 0 1],x(6));
-center = offsetXYZ(center,x);
-center = offsetXYZ(center,cg);
-% Calculate the free surface
-f=waveElev(center,AH,w,dw,t,k,rampT,phaseRand,typeNum,waveDir);
-end
-
-function f=waveElev(center,AH,w,dw,t,k,rampT,phaseRand,typeNum,waveDir)
-% Function to calculate the wave elevation at an array of points
-f = zeros(length(center(:,3)),1);
-cx = center(:,1);
-cy = center(:,2);
-X = cx*cos(waveDir*pi/180) + cy*sin(waveDir*pi/180);
+% Calculate the wave elevation for each wave type
+X = x.*cos(waveDir*pi/180) + y.*sin(waveDir*pi/180);
+temp = 0.*totalSize;
 if typeNum <10
 elseif typeNum <20
-    f = AH(1).*cos(k(1).*X-w(1)*t);
+    temp = A.*waveSpread.*cos(k(1).*X-w(1).*time);
 elseif typeNum <30
-    tmp=sqrt(AH.*dw);
-    tmp1 = ones(1,length(center(:,1)));
-    tmp2 = (w.*t+phaseRand)*tmp1;
-    tmp3 = cos(k*X'- tmp2);
-    f(:,1) = tmp3'*tmp;
+    temp = sqrt(A.*dw).*waveSpread.*cos(w.*time + phaseRand - k.*X);
 end
-if t<=rampT
-    rampF = (1+cos(pi+pi*t/rampT))/2;
-    f = f.*rampF;
-end
+elevation = zeros(length(x),1);
+elevation = sum(temp,[2 3]);
+
 end
