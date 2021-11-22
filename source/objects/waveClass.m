@@ -65,7 +65,7 @@ classdef waveClass<handle
         waveAmpTime2 = [];  % Wave elevation time history at a wave gauge 2 location specified by user [m] 
         waveAmpTime3 = [];  % Wave elevation time history at a wave gauge 3 location specified by user [m] 
         waveAmpTimeViz = [];% Wave elevation time history at marker locations specified by user [m] 
-        A = [];             % Wave amplitude [m]. For regular waves or 2*(wave spectrum vector) for irregular waves
+        A = [];             % Wave amplitude [m]. For regular waves or sqrt(2*(wave spectrum vector)) for irregular waves
         w = [];             % Wave frequency (regular waves) or wave frequency vector (irregular waves) [rad/s] 
         phase = 0;          % Wave phase [rad] . Only used for ``irregular`` waves.
         dw = 0;             % Frequency spacing [rad] for ``irregular`` waves.
@@ -628,7 +628,7 @@ classdef waveClass<handle
                 obj.Pw = sum(1/2*rho*g^(2)*S_f/(2*pi).*obj.dw./obj.w);
             else
                 % Full Wave Power Equation
-                obj.Pw = sum((1/2)*rho*g.*S_f/(2*pi).*obj.dw.*sqrt(9.81./obj.k.*tanh(obj.k.*obj.waterDepth)).*(1 + 2.*obj.k.*obj.waterDepth./sinh(2.*obj.k.*obj.waterDepth)));
+                obj.Pw = sum((1/2)*rho*g.*S_f/(2*pi).*obj.dw.*sqrt(g./obj.k.*tanh(obj.k.*obj.waterDepth)).*(1 + 2.*obj.k.*obj.waterDepth./sinh(2.*obj.k.*obj.waterDepth)));
             end
             %
             switch obj.freqDisc

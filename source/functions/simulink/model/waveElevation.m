@@ -26,9 +26,9 @@ X = x.*cos(waveDir*pi/180) + y.*sin(waveDir*pi/180);
 temp = 0.*totalSize;
 if typeNum <10
 elseif typeNum <20
-    temp = A.*waveSpread.*cos(k(1).*X-w(1).*time);
+    temp = A(1).*waveSpread.*cos(w(1).*time - k(1).*X);
 elseif typeNum <30
-    temp = sqrt(A.*dw).*waveSpread.*cos(w.*time + phaseRand - k.*X);
+    temp = sqrt(A.*dw).*waveSpread.*cos(w.*time - k.*X + phaseRand);
 end
 elevation = zeros(length(x),1);
 elevation = sum(temp,[2 3]);
