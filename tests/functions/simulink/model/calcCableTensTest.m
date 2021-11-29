@@ -6,7 +6,7 @@ classdef calcCableTensTest < matlab.unittest.TestCase
     end
 
     methods(Test)        
-        function compressionTest(testCase,position,initialLength)
+        function tensionTest(testCase,position,initialLength)
             k = 1e3;
             c = 1e2;
             L0 = 5;
