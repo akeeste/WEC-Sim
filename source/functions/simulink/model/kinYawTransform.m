@@ -1,9 +1,9 @@
-function [dispLoc, velLoc, accLoc] = kinYawTransformB2B(yawNonLin, dispGlobal, velGlobal, accGlobal, numBody)
+function [dispLoc, velLoc, accLoc] = kinYawTransform(yawNonLin, dispGlobal, velGlobal, accGlobal)
 
 % pre-allocate outputs
-    dispLoc=zeros(6,1);
-    velLoc=zeros(numBody*6,1);
-    accLoc=zeros(numBody*6,1);
+dispLoc = zeros(6,1);
+velLoc = zeros(size(velGlobal));
+accLoc = zeros(size(accGlobal));
     
 if yawNonLin == 1
     % rotate kinematics to 'zero' the yaw displacement (in order to
@@ -20,15 +20,16 @@ if yawNonLin == 1
 
     [phiLoc, thetaLoc, psiLoc] = rotMatXYZ2Eul(rotMatLoc);
     dispLoc = [rotMatYawTranspose*dispGlobal(1:3); phiLoc; thetaLoc; psiLoc];
-   for k=1:length(velGlobal)/6 % loop through each 6-dof body
+    for k=1:length(velGlobal)/6
         velLoc(6*(k-1)+1:6*(k-1)+6) = [rotMatYawTranspose*velGlobal((6*(k-1)+1):(6*(k-1)+3));...
-            rotMatYawTranspose*velGlobal((6*(k-1)+4):(6*(k-1)+6))];
+                                       rotMatYawTranspose*velGlobal((6*(k-1)+4):(6*(k-1)+6))];
         accLoc(6*(k-1)+1:6*(k-1)+6) = [rotMatYawTranspose*accGlobal((6*(k-1)+1):(6*(k-1)+3));...
-            rotMatYawTranspose*accGlobal((6*(k-1)+4):(6*(k-1)+6))];
+                                       rotMatYawTranspose*accGlobal((6*(k-1)+4):(6*(k-1)+6))];
     end
 else
     dispLoc = dispGlobal;
     velLoc = velGlobal;
     accLoc = accGlobal;
 end
+
 end

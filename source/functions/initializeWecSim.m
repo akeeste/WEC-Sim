@@ -19,7 +19,6 @@
 
 %% Start WEC-Sim log
 % Clear old input, plots, log file and start new log file.
-clc; diary off; close all;
 clear body waves simu output pto constraint ptoSim mooring values names InParam
 delete('*.log');
 diary('simulation.log')

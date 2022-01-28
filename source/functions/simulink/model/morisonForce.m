@@ -1,4 +1,4 @@
-function f = allWaveMorison(z,r,vel,accel,disp,area,cd,vol,ca,time,rho,waveDir,waterDepth,k,w,A,rampTime,g,randPhase,dw,currentSpeed,currentDirection,currentDepth,currentOption,bodyMorison,typeNum)
+function f = morisonForce(z,r,vel,accel,disp,area,cd,vol,ca,time,rho,waveDir,waterDepth,k,w,A,rampTime,g,randPhase,dw,currentSpeed,currentDirection,currentDepth,currentOption,bodyMorison,typeNum)
 % This function calculates the Morison element force for all wave cases.
 [rr,~]  = size(r); 
 [ff]    = length(w);
