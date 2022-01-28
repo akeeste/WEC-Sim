@@ -24,6 +24,7 @@ end
 % together. New dimensions should be:
 % [nXPoints, nDirections, nFrequencies] or [nTimesteps, nDirections, nFrequencies];
 totalSize = ones(length(x), length(waveDir), length(A));
+phaseRand = reshape(phaseRand,[1 length(waveDir) length(A)]);
 
 % Calculate the wave elevation for each wave type
 X = x.*cos(waveDir*pi/180) + y.*sin(waveDir*pi/180);
