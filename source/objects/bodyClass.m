@@ -503,18 +503,19 @@ classdef bodyClass<handle
             % Regular wave excitation force
             % Used by hydroForcePre
             nDOF = obj.dof;
+            nDir = length(waveDir);
             re = obj.hydroData.hydro_coeffs.excitation.re(:,:,:) .*rho.*g;
             im = obj.hydroData.hydro_coeffs.excitation.im(:,:,:) .*rho.*g;
             md = obj.hydroData.hydro_coeffs.mean_drift(:,:,:)    .*rho.*g;
-            obj.hydroForce.fExt.re=zeros(1,nDOF);
-            obj.hydroForce.fExt.im=zeros(1,nDOF);
-            obj.hydroForce.fExt.md=zeros(1,nDOF);
+            obj.hydroForce.fExt.re=zeros(nDir,nDOF);
+            obj.hydroForce.fExt.im=zeros(nDir,nDOF);
+            obj.hydroForce.fExt.md=zeros(nDir,nDOF);
             for ii=1:nDOF
                 if length(obj.hydroData.simulation_parameters.wave_dir) > 1
                     [X,Y] = meshgrid(obj.hydroData.simulation_parameters.w, obj.hydroData.simulation_parameters.wave_dir);
-                    obj.hydroForce.fExt.re(ii) = interp2(X, Y, squeeze(re(ii,:,:)), w, waveDir);
-                    obj.hydroForce.fExt.im(ii) = interp2(X, Y, squeeze(im(ii,:,:)), w, waveDir);
-                    obj.hydroForce.fExt.md(ii) = interp2(X, Y, squeeze(md(ii,:,:)), w, waveDir);
+                    obj.hydroForce.fExt.re(:,ii) = interp2(X, Y, squeeze(re(ii,:,:)), w, waveDir);
+                    obj.hydroForce.fExt.im(:,ii) = interp2(X, Y, squeeze(im(ii,:,:)), w, waveDir);
+                    obj.hydroForce.fExt.md(:,ii) = interp2(X, Y, squeeze(md(ii,:,:)), w, waveDir);
                 elseif obj.hydroData.simulation_parameters.wave_dir == waveDir
                     obj.hydroForce.fExt.re(ii) = interp1(obj.hydroData.simulation_parameters.w,squeeze(re(ii,1,:)),w,'spline');
                     obj.hydroForce.fExt.im(ii) = interp1(obj.hydroData.simulation_parameters.w,squeeze(im(ii,1,:)),w,'spline');

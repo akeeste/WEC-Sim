@@ -5,8 +5,8 @@ function [Fext,relYawLast,coeffsLastMD,coeffsLastRE,coeffsLastIM] = irregnLYaw(A
 % relative yaw angle - last interpolated > threshold, the interpolation is
 % performed again. To interpolate every time step, let threshold=0.
 
-% caseFlag is for debug, delete when satisfied
 A1=bsxfun(@plus,w*time,pi/2);
+
 %initialize outputs
 Fext = zeros(1,6);
 relYawLast=0;
