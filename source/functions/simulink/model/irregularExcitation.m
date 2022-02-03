@@ -13,12 +13,15 @@ function Fext = irregularExcitation(A,w,fExtRE,fExtIM,phaseRand,dw,time,waveSpre
 % Loop through all wave directions
 Fext = zeros(1,size(fExtRE,3));
 for ii = 1:length(waveSpread)
+    % Calculate excitation force for given wave direction
     amplitude = sqrt(A.*dw.*waveSpread(ii));
     exRe = squeeze(fExtRE(ii,:,:));
     exIm = squeeze(fExtIM(ii,:,:));
     exMd = squeeze(fExtMD(ii,:,:));
     directionalComponent = excitationForce(time,amplitude,w,exRe,...
         exIm,exMd,phaseRand(:,ii));
+
+    % Sum excitation force from all wave directions
     Fext = Fext + directionalComponent;
 end
 

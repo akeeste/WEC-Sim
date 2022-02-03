@@ -5,8 +5,6 @@ function [Fext,relYawLast,coeffsLastMD,coeffsLastRE,coeffsLastIM] = irregnLYaw(A
 % relative yaw angle - last interpolated > threshold, the interpolation is
 % performed again. To interpolate every time step, let threshold=0.
 
-A1=bsxfun(@plus,w*time,pi/2);
-
 %initialize outputs
 Fext = zeros(1,6);
 relYawLast=0;
@@ -72,18 +70,17 @@ for ii=1:length(WaveDir)
         coeffsLastRE=fExtREint;
         coeffsLastIM=fExtIMint;
     end
-    B1= sin(bsxfun(@plus,A1,phaseRandint));
-    B11 = sin(bsxfun(@plus,w*time,phaseRandint));
-    C0 = bsxfun(@times,A*WaveSpreadint,dw);
-    C1 = sqrt(bsxfun(@times,A*WaveSpreadint,dw));
-    D0 =bsxfun(@times,fExtMDint,C0);
-    D1 =bsxfun(@times,fExtREint,C1);
-    D11 = bsxfun(@times,fExtIMint,C1);
-    E1 = D0+ bsxfun(@times,B1,D1);
-    E11 = bsxfun(@times,B11,D11);
-    Fext = Fext + sum(bsxfun(@minus,E1,E11));
+
+    % Calculate excitation force for given wave direction
+    amplitude = sqrt(A.*dw.*WaveSpreadint);
+%     exRe = squeeze(fExtRE(ii,:,:));
+%     exIm = squeeze(fExtIM(ii,:,:));
+%     exMd = squeeze(fExtMD(ii,:,:));
+    directionalComponent = excitationForce(time,amplitude,w,fExtREint,...
+        fExtIMint,fExtMDint,phaseRandint);
+    
+    % Sum excitation force from all wave directions
+    Fext = Fext + directionalComponent;
 end
 
 end
-
-

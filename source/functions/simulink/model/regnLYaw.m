@@ -1,10 +1,11 @@
-function [Fext,relYawLast,coeffsLastMD,coeffsLastRE,coeffsLastIM] = regnLYaw(A,w,dofGRD,dirGRD,fEHRE,fEHIM, fEHMD,time,WaveDir,Disp, intThresh, prevYaw, prevCoeffMD, prevCoeffRE, prevCoeffIM)
+function [Fext,relYawLast,coeffsLastMD,coeffsLastRE,coeffsLastIM] = regnLYaw(A,w,dofGRD,dirGRD,fEHRE,fEHIM, fEHMD,time,WaveDir,waveSpread,Disp, intThresh, prevYaw, prevCoeffMD, prevCoeffRE, prevCoeffIM)
 %#codegen
 % Fext is the excitation force output, relYawLast is the angle of relative
 % yaw at which that last interpolation was performed. If the current
 % relative yaw angle - last interpolated > threshold, the interpolation is
 % performed again. To interpolate every time step, let threshold=0. 
 
+Fext = zeros(1,6);
 for ii=1:length(WaveDir) % should be length=1 for regular waves
     relYaw=WaveDir(ii)-(Disp(6).*180/pi); % relative yaw angle, convert to deg
    
@@ -60,10 +61,12 @@ for ii=1:length(WaveDir) % should be length=1 for regular waves
         coeffsLastIM=fExtIMint;
     end
 
-    % regular wave excitation equation (with mean drift)
-    Fext = fExtMDint*A^2 + A*fExtREint*cos(w*time)- A*fExtIMint*sin(w*time);
+    % Calculate excitation force for given wave direction
+    amplitude = A*waveSpread(ii);
+    directionalComponent = excitationForce(time,amplitude,w,fExtREint,...
+        fExtIMint,fExtMDint,0);
+
+    % Sum excitation force from all wave directions
+    Fext = Fext + directionalComponent;
     
-
 end
-
-
