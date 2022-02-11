@@ -1,4 +1,4 @@
-function Plot_BEMIO(hydro,varargin)
+function plotBEMIO(hydro,varargin)
 % Plots the added mass, radiation damping, radiation IRF, excitation force magnitude, excitation force phase, and excitation IRF for each body in the heave, surge and pitch degrees of freedom.
 % 
 % Plot_BEMIO(hydro)
@@ -9,22 +9,22 @@ function Plot_BEMIO(hydro,varargin)
 % p = waitbar(0,'Plotting BEMIO results…');  % Progress bar
 
 %% Added Mass
-Plot_AddedMass(hydro,varargin)
+plotAddedMass(hydro,varargin)
 
 %% Radiation Damping
-Plot_RadiationDamping(hydro,varargin)
+plotRadiationDamping(hydro,varargin)
 
 %% Radiation IRFs
-Plot_RadiationIRF(hydro,varargin)
+plotRadiationIRF(hydro,varargin)
 
 %% Excitation Force Magnitude
-Plot_ExcitationMagnitude(hydro,varargin)
+plotExcitationMagnitude(hydro,varargin)
 
 %% Excitation Force Phase
-Plot_ExcitationPhase(hydro,varargin)
+plotExcitationPhase(hydro,varargin)
 
 %% Excitation IRFs
-Plot_ExcitationIRF(hydro,varargin)
+plotExcitationIRF(hydro,varargin)
 
 end
 

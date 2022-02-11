@@ -1,4 +1,4 @@
-function Plot_ExcitationPhase(hydro,varargin)
+function plotExcitationPhase(hydro,varargin)
 
     B=1;  % Wave heading index
     clear X Y Legends

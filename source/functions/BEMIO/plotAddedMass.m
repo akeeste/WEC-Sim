@@ -1,4 +1,4 @@
-function Plot_AddedMass(hydro,varargin)
+function plotAddedMass(hydro,varargin)
     
     clear X Y Legends
     Fig1 = figure('Position',[50,500,975,521]);

@@ -1,4 +1,4 @@
-function Plot_RadiationIRF(hydro,varargin)
+function plotRadiationIRF(hydro,varargin)
 
     clear X Y Legends
     Fig3 = figure('Position',[50,100,975,521]);

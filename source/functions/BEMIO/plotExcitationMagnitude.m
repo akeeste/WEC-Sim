@@ -1,4 +1,4 @@
-function Plot_ExcitationMagnitude(hydro,varargin)
+function plotExcitationMagnitude(hydro,varargin)
 
     B=1;  % Wave heading index
     clear X Y Legends

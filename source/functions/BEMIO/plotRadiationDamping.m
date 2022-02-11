@@ -1,4 +1,4 @@
-function Plot_RadiationDamping(hydro,varargin)
+function plotRadiationDamping(hydro,varargin)
     
     clear X Y Legends
     Fig2 = figure('Position',[50,300,975,521]);

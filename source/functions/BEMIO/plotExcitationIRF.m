@@ -1,4 +1,4 @@
-function Plot_ExcitationIRF(hydro,varargin)
+function plotExcitationIRF(hydro,varargin)
 
     B=1;  % Wave heading index
     clear X Y Legends

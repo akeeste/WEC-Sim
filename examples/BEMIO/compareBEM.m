@@ -16,31 +16,31 @@ clear all;clc; close all
 
 load('wamit_aqwa.mat')
 
-% Plot_AddedMass(WAMIT_hydro)
-% Plot_AddedMass(AQWA_hydro)
-% Plot_AddedMass(WAMIT_hydro,AQWA_hydro)
+% plotAddedMass(WAMIT_hydro)
+% plotAddedMass(AQWA_hydro)
+% plotAddedMass(WAMIT_hydro,AQWA_hydro)
 % 
-% Plot_RadiationDamping(WAMIT_hydro)
-% Plot_RadiationDamping(AQWA_hydro)
-% Plot_RadiationDamping(WAMIT_hydro,AQWA_hydro)
+% plotRadiationDamping(WAMIT_hydro)
+% plotRadiationDamping(AQWA_hydro)
+% plotRadiationDamping(WAMIT_hydro,AQWA_hydro)
 % 
-% Plot_RadiationIRF(WAMIT_hydro)
-% Plot_RadiationIRF(AQWA_hydro)
-% Plot_RadiationIRF(WAMIT_hydro,AQWA_hydro)
+% plotRadiationIRF(WAMIT_hydro)
+% plotRadiationIRF(AQWA_hydro)
+% plotRadiationIRF(WAMIT_hydro,AQWA_hydro)
 % 
-% Plot_ExcitationMagnitude(WAMIT_hydro)
-% Plot_ExcitationMagnitude(AQWA_hydro)
-% Plot_ExcitationMagnitude(WAMIT_hydro,AQWA_hydro)
+% plotExcitationMagnitude(WAMIT_hydro)
+% plotExcitationMagnitude(AQWA_hydro)
+% plotExcitationMagnitude(WAMIT_hydro,AQWA_hydro)
 % 
-% Plot_ExcitationPhase(WAMIT_hydro)
-% Plot_ExcitationPhase(AQWA_hydro)
-% Plot_ExcitationPhase(WAMIT_hydro,AQWA_hydro)
+% plotExcitationPhase(WAMIT_hydro)
+% plotExcitationPhase(AQWA_hydro)
+% plotExcitationPhase(WAMIT_hydro,AQWA_hydro)
 % 
-% Plot_ExcitationIRF(WAMIT_hydro)
-% Plot_ExcitationIRF(AQWA_hydro)
-% Plot_ExcitationIRF(WAMIT_hydro,AQWA_hydro)
+% plotExcitationIRF(WAMIT_hydro)
+% plotExcitationIRF(AQWA_hydro)
+% plotExcitationIRF(WAMIT_hydro,AQWA_hydro)
 
-Plot_BEMIO(WAMIT_hydro,AQWA_hydro)
+plotBEMIO(WAMIT_hydro,AQWA_hydro)
 
 %% from h5 file
 
@@ -56,7 +56,7 @@ Plot_BEMIO(WAMIT_hydro,AQWA_hydro)
 % AQWA_body2 = readBEMIOH5(AQWA,2);
 % 
 % 
-% Plot_BEMIO(WAMIT_body1)
+% plotBEMIO(WAMIT_body1)
 % hold on
-% Plot_BEMIO(AQWA_body1)
+% plotBEMIO(AQWA_body1)
 
