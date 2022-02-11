@@ -1,7 +1,7 @@
 function plotBEMIO(hydro,varargin)
 % Plots the added mass, radiation damping, radiation IRF, excitation force magnitude, excitation force phase, and excitation IRF for each body in the heave, surge and pitch degrees of freedom.
 % 
-% Plot_BEMIO(hydro)
+% plotBEMIO(hydro)
 %     hydro – data structure
 % 
 % See ‘...WEC-Sim\examples\BEMIO...’ for examples of usage.

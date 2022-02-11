@@ -16,9 +16,9 @@ clear all;clc; close all
 
 load('wamit_aqwa.mat')
 
-% plotAddedMass(WAMIT_hydro)
-% plotAddedMass(AQWA_hydro)
-% plotAddedMass(WAMIT_hydro,AQWA_hydro)
+plotAddedMass(WAMIT_hydro)
+plotAddedMass(AQWA_hydro)
+plotAddedMass(WAMIT_hydro,AQWA_hydro)
 % 
 % plotRadiationDamping(WAMIT_hydro)
 % plotRadiationDamping(AQWA_hydro)
