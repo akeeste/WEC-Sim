@@ -35,20 +35,20 @@ function plotExcitationIRF(hydro,varargin)
     if isempty(varargin)
         FormatPlot(Fig6,Title,Subtitles,XLables,YLables,X,Y,Legends,Notes)
     end
-
     
     if length(varargin)==1
         try varargin{1}=varargin{1}{1}; end
         X1 = varargin{1}.ex_t;
+        Nb = varargin{1}.Nb;
         a = 0;
-        for i = 1:varargin{1}.Nb
+        for i = 1:Nb
             m = varargin{1}.dof(i);
             Y1(1,i,:) = squeeze(varargin{1}.ex_K(a+1,B,:));
-            Legends{1,i+2} = [varargin{1}.body{i}];
+            Legends{1,i+Nb} = [varargin{1}.body{i}];
             Y1(2,i,:) = squeeze(varargin{1}.ex_K(a+3,B,:));
-            Legends{2,i+2} = [varargin{1}.body{i}];
+            Legends{2,i+Nb} = [varargin{1}.body{i}];
             Y1(3,i,:) = squeeze(varargin{1}.ex_K(a+5,B,:));
-            Legends{3,i+2} = [varargin{1}.body{i}];
+            Legends{3,i+Nb} = [varargin{1}.body{i}];
             a = a + m;
         end
         FormatPlot(Fig6,Title,Subtitles,XLables,YLables,X,Y,Legends,Notes,X1,Y1)  

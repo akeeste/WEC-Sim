@@ -47,26 +47,24 @@ function plotRadiationIRF(hydro,varargin)
     if length(varargin)==1
         try varargin{1}=varargin{1}{1}; end
         X1 = hydro.ra_t;
-        n = 1;
+        Nb = varargin{1}.Nb;
         a = 0;    
-        for i = 1:varargin{1}.Nb
+        for i = 1:Nb
             m = varargin{1}.dof(i);
-            Y1(1,n,:) = squeeze(varargin{1}.ra_K(a+1,a+1,:));
-            Legends{1,n+2} = [varargin{1}.body{i}];
-            Y1(2,n,:) = squeeze(varargin{1}.ra_K(a+3,a+3,:));
-            Legends{2,n+2} = [varargin{1}.body{i}];
-            Y1(3,n,:) = squeeze(varargin{1}.ra_K(a+5,a+5,:));
-            Legends{3,n+2} = [varargin{1}.body{i}];
+            Y1(1,i,:) = squeeze(varargin{1}.ra_K(a+1,a+1,:));
+            Legends{1,i+Nb} = [varargin{1}.body{i}];
+            Y1(2,i,:) = squeeze(varargin{1}.ra_K(a+3,a+3,:));
+            Legends{2,i+Nb} = [varargin{1}.body{i}];
+            Y1(3,i,:) = squeeze(varargin{1}.ra_K(a+5,a+5,:));
+            Legends{3,i+Nb} = [varargin{1}.body{i}];
             if isfield(varargin{1},'ss_A')==1
-                n = n+1;
-                Y1(1,n,:) = squeeze(varargin{1}.ss_K(a+1,a+1,:));
-                Legends{1,n+2} = [varargin{1}.body{i},' (SS)'];
-                Y1(2,n,:) = squeeze(varargin{1}.ss_K(a+3,a+3,:));
-                Legends{2,n+2} = [varargin{1}.body{i},' (SS)'];
-                Y1(3,n,:) = squeeze(varargin{1}.ss_K(a+5,a+5,:));
-                Legends{3,n+2} = [varargin{1}.body{i},' (SS)'];
+                Y1(1,i,:) = squeeze(varargin{1}.ss_K(a+1,a+1,:));
+                Legends{1,i+Nb} = [varargin{1}.body{i},' (SS)'];
+                Y1(2,i,:) = squeeze(varargin{1}.ss_K(a+3,a+3,:));
+                Legends{2,i+Nb} = [varargin{1}.body{i},' (SS)'];
+                Y1(3,i,:) = squeeze(varargin{1}.ss_K(a+5,a+5,:));
+                Legends{3,i+Nb} = [varargin{1}.body{i},' (SS)'];
             end
-            n = n+1;
             a = a + m;
         end  
         FormatPlot(Fig3,Title,Subtitles,XLables,YLables,X,Y,Legends,Notes,X1,Y1)  
