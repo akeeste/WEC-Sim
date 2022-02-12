@@ -53,8 +53,8 @@ load('wamit_aqwa_cap_rm3.mat')
 %% WEC3 (3 bodies)
 
 % WAMIT_hydro = struct();
-% WAMIT = '.\WAMIT\WEC3\wec3.out';
-% WAMIT_hydro = Read_WAMIT(WAMIT_hydro,WAMIT,[]);
+% WAMIT_out = '.\WAMIT\WEC3\wec3.out';
+% WAMIT_hydro = Read_WAMIT(WAMIT_hydro,WAMIT_out,[]);
 % WAMIT_hydro = Radiation_IRF(WAMIT_hydro,160,[],[],[],[]);
 % WAMIT_hydro = Excitation_IRF(WAMIT_hydro,160,[],[],[],[]);
 % 
@@ -65,18 +65,20 @@ load('wamit_aqwa_cap_rm3.mat')
 % AQWA_hydro = Radiation_IRF(AQWA_hydro,160,[],[],[],[]);
 % AQWA_hydro = Excitation_IRF(AQWA_hydro,160,[],[],[],[]);
 
-% load('wamit_aqwa_wec3.mat')
+load('wamit_aqwa_wec3.mat')
 
 %% Plot 
 plotAddedMass(WAMIT_hydro)
 plotAddedMass(AQWA_hydro)
 plotAddedMass(WAMIT_hydro,AQWA_hydro)
-plotAddedMass(CAP_hydro)
-plotAddedMass(WAMIT_hydro,AQWA_hydro,CAP_hydro)
+% plotAddedMass(CAP_hydro)
+% plotAddedMass(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
-% plotRadiationDamping(WAMIT_hydro)
-% plotRadiationDamping(AQWA_hydro)
-% plotRadiationDamping(WAMIT_hydro,AQWA_hydro)
+plotRadiationDamping(WAMIT_hydro)
+plotRadiationDamping(AQWA_hydro)
+plotRadiationDamping(WAMIT_hydro,AQWA_hydro)
+plotRadiationDamping(CAP_hydro)
+plotRadiationDamping(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
 % plotRadiationIRF(WAMIT_hydro)
 % plotRadiationIRF(AQWA_hydro)
