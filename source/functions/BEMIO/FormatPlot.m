@@ -19,10 +19,17 @@ for i = 1:b
     plot(X_data,squeeze(Y_data(1,i,:)),'LineWidth',1); 
     hold on
     if ~isempty(varargin)
-        plot(varargin{1},squeeze(varargin{2}(1,i,:)),'LineWidth',1) 
+        numHydro = length(fieldnames(varargin{1}));
+        for ii = 1:numHydro           
+            tmp1 = strcat('freq',num2str(ii));
+            tmp2 = strcat('addedMass',num2str(ii));
+            plot(varargin{1}.(tmp1),squeeze(varargin{2}.(tmp2)(1,i,:)),'LineWidth',1)  
+        end
+    else
+        numHydro=0;
     end
     if i==b
-        legend(legends(1,:),'location','best','Box','off','Interpreter','none')
+        legend(reshape(legends,[(1+numHydro)*b,1]),'location','best','Box','off','Interpreter','none')
         title(subtitle(1));
         xlabel(x_lables(1),'Interpreter','latex');
         ylabel(y_lables(1),'Interpreter','latex');    
@@ -34,10 +41,15 @@ for i = 1:b
     plot(X_data,squeeze(Y_data(2,i,:)),'LineWidth',1);  
     hold on
     if ~isempty(varargin)
-        plot(varargin{1},squeeze(varargin{2}(2,i,:)),'LineWidth',1);  %,'Parent',axes2);
+        numHydro = length(fieldnames(varargin{1}));
+        for ii = 1:numHydro           
+            tmp1 = strcat('freq',num2str(ii));
+            tmp2 = strcat('addedMass',num2str(ii));
+            plot(varargin{1}.(tmp1),squeeze(varargin{2}.(tmp2)(2,i,:)),'LineWidth',1);  
+        end        
     end
     if i==b
-        legend(legends(2,:),'location','best','Box','off','Interpreter','none')
+       legend(reshape(legends,[(1+numHydro)*b,1]),'location','best','Box','off','Interpreter','none')
         title(subtitle(2));
         xlabel(x_lables(2),'Interpreter','latex');
         ylabel(y_lables(2),'Interpreter','latex');
@@ -49,10 +61,15 @@ for i = 1:b
     plot(X_data,squeeze(Y_data(3,i,:)),'LineWidth',1);  %,'Parent',axes3);
     hold on
     if ~isempty(varargin)
-        plot(varargin{1},squeeze(varargin{2}(3,i,:)),'LineWidth',1);  %,'Parent',axes3);    
+        numHydro = length(fieldnames(varargin{1}));
+        for ii = 1:numHydro           
+            tmp1 = strcat('freq',num2str(ii));
+            tmp2 = strcat('addedMass',num2str(ii));
+            plot(varargin{1}.(tmp1),squeeze(varargin{2}.(tmp2)(3,i,:)),'LineWidth',1);  
+        end            
     end
     if i==b
-        legend(legends(3,:),'location','best','Box','off','Interpreter','none')
+       legend(reshape(legends,[(1+numHydro)*b,1]),'location','best','Box','off','Interpreter','none')
         title(subtitle(3));
         xlabel(x_lables(3),'Interpreter','latex');
         ylabel(y_lables(3),'Interpreter','latex');
