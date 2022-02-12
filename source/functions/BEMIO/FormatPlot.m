@@ -21,8 +21,8 @@ for i = 1:b
     if ~isempty(varargin)
         numHydro = length(fieldnames(varargin{1}));
         for ii = 1:numHydro           
-            tmp1 = strcat('freq',num2str(ii));
-            tmp2 = strcat('addedMass',num2str(ii));
+            tmp1 = strcat('X',num2str(ii));
+            tmp2 = strcat('Y',num2str(ii));
             plot(varargin{1}.(tmp1),squeeze(varargin{2}.(tmp2)(1,i,:)),'LineWidth',1)  
         end
     else
@@ -43,8 +43,8 @@ for i = 1:b
     if ~isempty(varargin)
         numHydro = length(fieldnames(varargin{1}));
         for ii = 1:numHydro           
-            tmp1 = strcat('freq',num2str(ii));
-            tmp2 = strcat('addedMass',num2str(ii));
+            tmp1 = strcat('X',num2str(ii));
+            tmp2 = strcat('Y',num2str(ii));
             plot(varargin{1}.(tmp1),squeeze(varargin{2}.(tmp2)(2,i,:)),'LineWidth',1);  
         end        
     end
@@ -58,13 +58,13 @@ for i = 1:b
     subplot('Position',[0.7235 0.3645 0.2521 0.4720]);
     hold('on');
     box('on');
-    plot(X_data,squeeze(Y_data(3,i,:)),'LineWidth',1);  %,'Parent',axes3);
+    plot(X_data,squeeze(Y_data(3,i,:)),'LineWidth',1); 
     hold on
     if ~isempty(varargin)
         numHydro = length(fieldnames(varargin{1}));
         for ii = 1:numHydro           
-            tmp1 = strcat('freq',num2str(ii));
-            tmp2 = strcat('addedMass',num2str(ii));
+            tmp1 = strcat('X',num2str(ii));
+            tmp2 = strcat('Y',num2str(ii));
             plot(varargin{1}.(tmp1),squeeze(varargin{2}.(tmp2)(3,i,:)),'LineWidth',1);  
         end            
     end

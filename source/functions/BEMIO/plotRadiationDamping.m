@@ -12,9 +12,7 @@ function plotRadiationDamping(hydro,varargin)
     for i = 1:hydro.Nb
         m = hydro.dof(i);
         Y(1,i,:) = squeeze(hydro.B(a+1,a+1,:));
-%         Legends{1,i} = [hydro.body{i}];
         Y(2,i,:) = squeeze(hydro.B(a+3,a+3,:));
-%         Legends{2,i} = [hydro.body{i}];
         Y(3,i,:) = squeeze(hydro.B(a+5,a+5,:));
 %         Legends{3,i} = [hydro.body{i}];
         Legends{i,1} = [hydro.body{i}];
@@ -37,9 +35,9 @@ function plotRadiationDamping(hydro,varargin)
     if numHydro>=1
        for ii=1:numHydro
             numBod = varargin{ii}.Nb;
-            tmp1 = strcat('freq',num2str(ii));
+            tmp1 = strcat('X',num2str(ii));
             X1.(tmp1) = varargin{ii}.w;
-            tmp2 = strcat('addedMass',num2str(ii));
+            tmp2 = strcat('Y',num2str(ii));
             a = 0;            
             for i = 1:numBod
                 m = varargin{ii}.dof(i);

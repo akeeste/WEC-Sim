@@ -33,9 +33,9 @@ function plotAddedMass(hydro,varargin)
     if numHydro>=1
        for ii=1:numHydro
             numBod = varargin{ii}.Nb;
-            tmp1 = strcat('freq',num2str(ii));
+            tmp1 = strcat('X',num2str(ii));
             X1.(tmp1) = varargin{ii}.w;
-            tmp2 = strcat('addedMass',num2str(ii));
+            tmp2 = strcat('Y',num2str(ii));
             a = 0;            
             for i = 1:numBod    
                 m = varargin{ii}.dof(i);

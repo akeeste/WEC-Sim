@@ -14,19 +14,21 @@ function plotRadiationIRF(hydro,varargin)
     for i = 1:hydro.Nb
         m = hydro.dof(i);
         Y(1,n,:) = squeeze(hydro.ra_K(a+1,a+1,:));
-        Legends{1,n} = [hydro.body{i}];
+%         Legends{1,n} = [hydro.body{i}];
         Y(2,n,:) = squeeze(hydro.ra_K(a+3,a+3,:));
-        Legends{2,n} = [hydro.body{i}];
+%         Legends{2,n} = [hydro.body{i}];
         Y(3,n,:) = squeeze(hydro.ra_K(a+5,a+5,:));
-        Legends{3,n} = [hydro.body{i}];
+%         Legends{3,n} = [hydro.body{i}];
+        Legends{i,1} = [hydro.body{i}];
         if isfield(hydro,'ss_A')==1
             n = n+1;
             Y(1,n,:) = squeeze(hydro.ss_K(a+1,a+1,:));
-            Legends{1,n} = [hydro.body{i},' (SS)'];
+%             Legends{1,n} = [hydro.body{i},' (SS)'];
             Y(2,n,:) = squeeze(hydro.ss_K(a+3,a+3,:));
-            Legends{2,n} = [hydro.body{i},' (SS)'];
+%             Legends{2,n} = [hydro.body{i},' (SS)'];
             Y(3,n,:) = squeeze(hydro.ss_K(a+5,a+5,:));
-            Legends{3,n} = [hydro.body{i},' (SS)'];
+%             Legends{3,n} = [hydro.body{i},' (SS)'];
+            Legends{i,1} = [hydro.body{i},' (SS)'];        
         end
         n = n+1;
         a = a + m;
@@ -44,29 +46,39 @@ function plotRadiationIRF(hydro,varargin)
         FormatPlot(Fig3,Title,Subtitles,XLables,YLables,X,Y,Legends,Notes)
     end
         
-    if length(varargin)==1
-        try varargin{1}=varargin{1}{1}; end
-        X1 = hydro.ra_t;
-        Nb = varargin{1}.Nb;
-        a = 0;    
-        for i = 1:Nb
-            m = varargin{1}.dof(i);
-            Y1(1,i,:) = squeeze(varargin{1}.ra_K(a+1,a+1,:));
-            Legends{1,i+Nb} = [varargin{1}.body{i}];
-            Y1(2,i,:) = squeeze(varargin{1}.ra_K(a+3,a+3,:));
-            Legends{2,i+Nb} = [varargin{1}.body{i}];
-            Y1(3,i,:) = squeeze(varargin{1}.ra_K(a+5,a+5,:));
-            Legends{3,i+Nb} = [varargin{1}.body{i}];
-            if isfield(varargin{1},'ss_A')==1
-                Y1(1,i,:) = squeeze(varargin{1}.ss_K(a+1,a+1,:));
-                Legends{1,i+Nb} = [varargin{1}.body{i},' (SS)'];
-                Y1(2,i,:) = squeeze(varargin{1}.ss_K(a+3,a+3,:));
-                Legends{2,i+Nb} = [varargin{1}.body{i},' (SS)'];
-                Y1(3,i,:) = squeeze(varargin{1}.ss_K(a+5,a+5,:));
-                Legends{3,i+Nb} = [varargin{1}.body{i},' (SS)'];
-            end
-            a = a + m;
-        end  
+%     if length(varargin)==1
+%         try varargin{1}=varargin{1}{1}; end
+    numHydro = length(varargin);
+    if numHydro>=1
+       for ii=1:numHydro
+            numBod = varargin{ii}.Nb;
+            tmp1 = strcat('X',num2str(ii));
+            X1.(tmp1) = varargin{ii}.ra_t;
+    %             X1 = hydro.ra_t;
+            tmp2 = strcat('Y',num2str(ii));
+    %         Nb = varargin{1}.Nb;
+            a = 0;    
+            for i = 1:numBod
+                m = varargin{ii}.dof(i);
+                Y1.(tmp2)(1,i,:) = squeeze(varargin{ii}.ra_K(a+1,a+1,:));
+    %             Legends{1,i+Nb} = [varargin{1}.body{i}];
+                Y1.(tmp2)(2,i,:) = squeeze(varargin{ii}.ra_K(a+3,a+3,:));
+    %             Legends{2,i+Nb} = [varargin{1}.body{i}];
+                Y1.(tmp2)(3,i,:) = squeeze(varargin{ii}.ra_K(a+5,a+5,:));
+    %             Legends{3,i+Nb} = [varargin{1}.body{i}];
+                Legends{i,1+ii} = [varargin{ii}.body{i}];                
+                if isfield(varargin{ii},'ss_A')==1
+                    Y1.(tmp2)(1,i,:) = squeeze(varargin{ii}.ss_K(a+1,a+1,:));
+    %                 Legends{1,i+Nb} = [varargin{1}.body{i},' (SS)'];
+                    Y1.(tmp2)(2,i,:) = squeeze(varargin{ii}.ss_K(a+3,a+3,:));
+    %                 Legends{2,i+Nb} = [varargin{1}.body{i},' (SS)'];
+                    Y1.(tmp2)(3,i,:) = squeeze(varargin{ii}.ss_K(a+5,a+5,:));
+    %                 Legends{3,i+Nb} = [varargin{1}.body{i},' (SS)'];
+                    Legends{i,1+11} = [hydro.body{i},' (SS)'];    
+                end
+                a = a + m;
+            end  
+       end
         FormatPlot(Fig3,Title,Subtitles,XLables,YLables,X,Y,Legends,Notes,X1,Y1)  
     end
     
