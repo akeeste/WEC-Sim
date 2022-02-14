@@ -14,7 +14,6 @@ function plotRadiationDamping(hydro,varargin)
         Y(1,i,:) = squeeze(hydro.B(a+1,a+1,:));
         Y(2,i,:) = squeeze(hydro.B(a+3,a+3,:));
         Y(3,i,:) = squeeze(hydro.B(a+5,a+5,:));
-%         Legends{3,i} = [hydro.body{i}];
         Legends{i,1} = [hydro.body{i}];
         a = a + m;
     end

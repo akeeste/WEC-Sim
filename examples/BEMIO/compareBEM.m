@@ -1,4 +1,5 @@
-clear all;clc; close all
+% clear all;
+clc; close all
 %% From hydro structure (before h5)
 
 %% Sphere (1 body)
@@ -24,7 +25,7 @@ clear all;clc; close all
 % CAP_hydro = Excitation_IRF(CAP_hydro,15,[],[],[],[]);
 
 % load('wamit_aqwa_sphere.mat')
-load('wamit_aqwa_cap_sphere.mat')
+% load('wamit_aqwa_cap_sphere.mat')
 
 %% RM3 (2 bodies)
 
@@ -65,38 +66,44 @@ load('wamit_aqwa_cap_rm3.mat')
 % AQWA_hydro = Radiation_IRF(AQWA_hydro,160,[],[],[],[]);
 % AQWA_hydro = Excitation_IRF(AQWA_hydro,160,[],[],[],[]);
 
-load('wamit_aqwa_wec3.mat')
+% load('wamit_aqwa_wec3.mat')
 
 %% Plot 
-plotAddedMass(WAMIT_hydro)
-plotAddedMass(AQWA_hydro)
-plotAddedMass(WAMIT_hydro,AQWA_hydro)
+% plotAddedMass(WAMIT_hydro)
+% plotAddedMass(AQWA_hydro)
+% plotAddedMass(WAMIT_hydro,AQWA_hydro)
 % plotAddedMass(CAP_hydro)
-% plotAddedMass(WAMIT_hydro,AQWA_hydro,CAP_hydro)
+plotAddedMass(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
-plotRadiationDamping(WAMIT_hydro)
-plotRadiationDamping(AQWA_hydro)
-plotRadiationDamping(WAMIT_hydro,AQWA_hydro)
-plotRadiationDamping(CAP_hydro)
+% plotRadiationDamping(WAMIT_hydro)
+% plotRadiationDamping(AQWA_hydro)
+% plotRadiationDamping(WAMIT_hydro,AQWA_hydro)
+% plotRadiationDamping(CAP_hydro)
 plotRadiationDamping(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
-plotRadiationIRF(WAMIT_hydro)
-plotRadiationIRF(AQWA_hydro)
-plotRadiationIRF(WAMIT_hydro,AQWA_hydro)
-plotRadiationIRF(CAP_hydro)
+% plotRadiationIRF(WAMIT_hydro)
+% plotRadiationIRF(AQWA_hydro)
+% plotRadiationIRF(WAMIT_hydro,AQWA_hydro)
+% plotRadiationIRF(CAP_hydro)
 plotRadiationIRF(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
 % plotExcitationMagnitude(WAMIT_hydro)
 % plotExcitationMagnitude(AQWA_hydro)
 % plotExcitationMagnitude(WAMIT_hydro,AQWA_hydro)
+plotExcitationMagnitude(CAP_hydro)
+plotExcitationMagnitude(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
 % plotExcitationPhase(WAMIT_hydro)
 % plotExcitationPhase(AQWA_hydro)
 % plotExcitationPhase(WAMIT_hydro,AQWA_hydro)
+plotExcitationPhase(CAP_hydro)
+plotExcitationPhase(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
 % plotExcitationIRF(WAMIT_hydro)
 % plotExcitationIRF(AQWA_hydro)
 % plotExcitationIRF(WAMIT_hydro,AQWA_hydro)
+plotExcitationIRF(CAP_hydro)
+plotExcitationIRF(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 
 plotBEMIO(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 

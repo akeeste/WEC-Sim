@@ -31,7 +31,7 @@ function plotAddedMass(hydro,varargin)
     
     numHydro = length(varargin);
     if numHydro>=1
-       for ii=1:numHydro
+        for ii=1:numHydro
             numBod = varargin{ii}.Nb;
             tmp1 = strcat('X',num2str(ii));
             X1.(tmp1) = varargin{ii}.w;
@@ -45,7 +45,7 @@ function plotAddedMass(hydro,varargin)
                 Legends{i,1+ii} = [varargin{ii}.body{i}];
                 a = a + m;
             end
-       end
+        end
         FormatPlot(Fig1,Title,Subtitles,XLables,YLables,X,Y,Legends,Notes,X1,Y1)    
     end
     
