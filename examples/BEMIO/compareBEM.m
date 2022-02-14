@@ -3,6 +3,7 @@ clear all;clc; close all
 %% From hydro structure (before h5)
 
 %% Sphere (1 body)
+clear all;clc; close all
 
 % WAMIT_hydro = struct();
 % WAMIT_out = '.\WAMIT\Sphere\sphere.out';
@@ -28,6 +29,7 @@ clear all;clc; close all
 load('wamit_aqwa_cap_sphere.mat')
 
 %% RM3 (2 bodies)
+clear all;clc; close all
 
 % WAMIT_hydro = struct();
 % WAMIT_out = '.\WAMIT\RM3\rm3.out';
@@ -52,6 +54,7 @@ load('wamit_aqwa_cap_sphere.mat')
 load('wamit_aqwa_cap_rm3.mat')
 
 %% WEC3 (3 bodies)
+clear all;clc; close all
 
 % WAMIT_hydro = struct();
 % WAMIT_out = '.\WAMIT\WEC3\wec3.out';
@@ -105,7 +108,7 @@ plotExcitationPhase(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % plotExcitationIRF(CAP_hydro)
 plotExcitationIRF(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 
-plotBEMIO(WAMIT_hydro,AQWA_hydro,CAP_hydro)
+% plotBEMIO(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 
 %% from h5 file
 

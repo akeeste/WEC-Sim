@@ -58,7 +58,7 @@ function plotRadiationIRF(hydro,varargin)
                     Y1.(tmp2)(1,i,:) = squeeze(varargin{ii}.ss_K(a+1,a+1,:));
                     Y1.(tmp2)(2,i,:) = squeeze(varargin{ii}.ss_K(a+3,a+3,:));
                     Y1.(tmp2)(3,i,:) = squeeze(varargin{ii}.ss_K(a+5,a+5,:));
-                    Legends{i,1+11} = [hydro.body{i},' (SS)'];    
+                    Legends{i,1+ii} = [hydro.body{i},' (SS)'];    
                 end
                 a = a + m;
             end  
