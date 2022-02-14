@@ -1,5 +1,5 @@
-% clear all;
-clc; close all
+clear all;clc; close all
+
 %% From hydro structure (before h5)
 
 %% Sphere (1 body)
@@ -25,7 +25,7 @@ clc; close all
 % CAP_hydro = Excitation_IRF(CAP_hydro,15,[],[],[],[]);
 
 % load('wamit_aqwa_sphere.mat')
-% load('wamit_aqwa_cap_sphere.mat')
+load('wamit_aqwa_cap_sphere.mat')
 
 %% RM3 (2 bodies)
 
@@ -90,19 +90,19 @@ plotRadiationIRF(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % plotExcitationMagnitude(WAMIT_hydro)
 % plotExcitationMagnitude(AQWA_hydro)
 % plotExcitationMagnitude(WAMIT_hydro,AQWA_hydro)
-plotExcitationMagnitude(CAP_hydro)
+% plotExcitationMagnitude(CAP_hydro)
 plotExcitationMagnitude(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
 % plotExcitationPhase(WAMIT_hydro)
 % plotExcitationPhase(AQWA_hydro)
 % plotExcitationPhase(WAMIT_hydro,AQWA_hydro)
-plotExcitationPhase(CAP_hydro)
+% plotExcitationPhase(CAP_hydro)
 plotExcitationPhase(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 % 
 % plotExcitationIRF(WAMIT_hydro)
 % plotExcitationIRF(AQWA_hydro)
 % plotExcitationIRF(WAMIT_hydro,AQWA_hydro)
-plotExcitationIRF(CAP_hydro)
+% plotExcitationIRF(CAP_hydro)
 plotExcitationIRF(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 
 plotBEMIO(WAMIT_hydro,AQWA_hydro,CAP_hydro)
