@@ -32,6 +32,13 @@ function plotRadiationDamping(hydro,varargin)
 
     numHydro = length(varargin);
     if numHydro>=1
+        if numHydro ==1
+            try 
+                varargin = varargin{1};
+                numHydro = length(varargin);
+            catch
+            end
+        end        
        for ii=1:numHydro
             numBod = varargin{ii}.Nb;
             tmp1 = strcat('X',num2str(ii));

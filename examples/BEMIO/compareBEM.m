@@ -135,7 +135,7 @@ plotExcitationPhase(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 plotExcitationIRF(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 
 % plotBEMIO(WAMIT_hydro,AQWA_hydro)
-% plotBEMIO(WAMIT_hydro,AQWA_hydro,CAP_hydro)
+plotBEMIO(WAMIT_hydro,AQWA_hydro,CAP_hydro)
 
 %% WEC3 (3 bodies)
 clear all;clc; close all
@@ -165,7 +165,7 @@ plotExcitationMagnitude(WAMIT_hydro,AQWA_hydro)
 plotExcitationPhase(WAMIT_hydro,AQWA_hydro)
 plotExcitationIRF(WAMIT_hydro,AQWA_hydro)
 
-% plotBEMIO(WAMIT_hydro,AQWA_hydro)
+plotBEMIO(WAMIT_hydro,AQWA_hydro)
 
 
 
