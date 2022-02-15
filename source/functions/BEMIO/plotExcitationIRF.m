@@ -58,6 +58,7 @@ function plotExcitationIRF(hydro,varargin)
                 Legends{i,1+ii} = [varargin{ii}.body{i}];
                 a = a + m;
             end
+        end
         FormatPlot(Fig6,Title,Subtitles,XLables,YLables,X,Y,Legends,Notes,X1,Y1)  
     end    
     

@@ -9,22 +9,19 @@ function plotRadiationIRF(hydro,varargin)
     YLables = {'$$\bar{K}_{1,1}(t)$$','$$\bar{K}_{3,3}(t)$$','$$\bar{K}_{3,3}(t)$$'};
     
     X = hydro.ra_t;
-    n = 1;
     a = 0;
     for i = 1:hydro.Nb
         m = hydro.dof(i);
-        Y(1,n,:) = squeeze(hydro.ra_K(a+1,a+1,:));
-        Y(2,n,:) = squeeze(hydro.ra_K(a+3,a+3,:));
-        Y(3,n,:) = squeeze(hydro.ra_K(a+5,a+5,:));
+        Y(1,i,:) = squeeze(hydro.ra_K(a+1,a+1,:));
+        Y(2,i,:) = squeeze(hydro.ra_K(a+3,a+3,:));
+        Y(3,i,:) = squeeze(hydro.ra_K(a+5,a+5,:));
         Legends{i,1} = [hydro.body{i}];
         if isfield(hydro,'ss_A')==1
-            n = n+1;
-            Y(1,n,:) = squeeze(hydro.ss_K(a+1,a+1,:));
-            Y(2,n,:) = squeeze(hydro.ss_K(a+3,a+3,:));
-            Y(3,n,:) = squeeze(hydro.ss_K(a+5,a+5,:));
+            Y(1,i,:) = squeeze(hydro.ss_K(a+1,a+1,:));
+            Y(2,i,:) = squeeze(hydro.ss_K(a+3,a+3,:));
+            Y(3,i,:) = squeeze(hydro.ss_K(a+5,a+5,:));
             Legends{i,1} = [hydro.body{i},' (SS)'];        
         end
-        n = n+1;
         a = a + m;
     end
     

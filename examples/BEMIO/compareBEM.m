@@ -22,10 +22,8 @@ clear all;clc; close all
 % CAP_nc = '.\Capytaine\Sphere\sphere_full.nc';
 % CAP_hydro = readCAPYTAINE(CAP_hydro,CAP_nc);
 % CAP_hydro = radiationIRF(CAP_hydro,15,[],[],[],[]);
-% CAP_hydro = radiationIRF_SS(CAP_hydro,[],[]);
 % CAP_hydro = excitationIRF(CAP_hydro,15,[],[],[],[]);
 
-% load('wamit_aqwa_sphere.mat')
 load('wamit_aqwa_cap_sphere.mat')
 
 %% Plot Sphere hydro data
@@ -74,26 +72,25 @@ clear all;clc; close all
 
 %% Load RM3 hydro data
 
-WAMIT_hydro = struct();
-WAMIT_out = '.\WAMIT\RM3\rm3.out';
-WAMIT_hydro = readWAMIT(WAMIT_hydro,WAMIT_out,[]);
-WAMIT_hydro = radiationIRF(WAMIT_hydro,20,[],[],[],[]);
-WAMIT_hydro = excitationIRF(WAMIT_hydro,20,[],[],[],[]);
+% WAMIT_hydro = struct();
+% WAMIT_out = '.\WAMIT\RM3\rm3.out';
+% WAMIT_hydro = readWAMIT(WAMIT_hydro,WAMIT_out,[]);
+% WAMIT_hydro = radiationIRF(WAMIT_hydro,20,[],[],[],[]);
+% WAMIT_hydro = excitationIRF(WAMIT_hydro,20,[],[],[],[]);
+% 
+% AQWA_hydro = struct();
+% AQWA_AH1 = '.\AQWA\RM3\RM3.AH1';
+% AQWA_LIS = '.\AQWA\RM3\RM3.LIS';
+% AQWA_hydro = readAQWA(AQWA_hydro, AQWA_AH1, AQWA_LIS);
+% AQWA_hydro = radiationIRF(AQWA_hydro,20,[],[],[],[]);
+% AQWA_hydro = excitationIRF(AQWA_hydro,20,[],[],[],[]);
+% 
+% CAP_hydro = struct();
+% CAP_nc = '.\Capytaine\RM3\rm3_full.nc';
+% CAP_hydro = readCAPYTAINE(CAP_hydro,CAP_nc);
+% CAP_hydro = radiationIRF(CAP_hydro,20,[],[],[],1.9);
+% CAP_hydro = excitationIRF(CAP_hydro,20,[],[],[],1.9);
 
-AQWA_hydro = struct();
-AQWA_AH1 = '.\AQWA\RM3\RM3.AH1';
-AQWA_LIS = '.\AQWA\RM3\RM3.LIS';
-AQWA_hydro = readAQWA(AQWA_hydro, AQWA_AH1, AQWA_LIS);
-AQWA_hydro = radiationIRF(AQWA_hydro,20,[],[],[],[]);
-AQWA_hydro = excitationIRF(AQWA_hydro,20,[],[],[],[]);
-
-CAP_hydro = struct();
-CAP_nc = '.\Capytaine\RM3\rm3_full.nc';
-CAP_hydro = readCAPYTAINE(CAP_hydro,CAP_nc);
-CAP_hydro = radiationIRF(CAP_hydro,20,[],[],[],[]);
-CAP_hydro = excitationIRF(CAP_hydro,20,[],[],[],[]);
-
-% load('wamit_aqwa_rm3.mat')
 load('wamit_aqwa_cap_rm3.mat')
 
 %% Plot RM3 hydro data
