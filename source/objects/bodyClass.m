@@ -756,6 +756,8 @@ classdef bodyClass<handle
                         end
                     end
                     obj.hydroForce.ssRadf.D = zeros(nDOF,LDOF);
+%                     Df = obj.hydroData.hydro_coeffs.radiation_damping.state_space.D.all;
+%                     obj.hydroForce.ssRadf.D = Df;
                 else
                     for ii = 1:nDOF
                         for jj = obj.dofStart:obj.dofEnd
