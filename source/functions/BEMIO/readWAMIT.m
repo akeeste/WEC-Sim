@@ -1,4 +1,4 @@
-function hydro = readWAMIT(hydro,filename,exCoeff)
+function hydro = readWAMIT(hydro, filename, options)
 % Reads data from a WAMIT output file.
 %
 % If generalized body modes are used, the output directory must also
@@ -16,14 +16,24 @@ function hydro = readWAMIT(hydro,filename,exCoeff)
 %     filename : string
 %         Path to the WAMIT output file
 %
-%     exCoeff : integer
+%     exCoeff : integer (optional)
 %         Flag indicating the type of excitation force coefficients to
 %         read, ‘diffraction’ (default), ‘haskind’, or ‘rao’
+% 
+%     quiet : bool (optional)
+%         Flag to turn off the waitbar.
+% 
 % Returns
 % -------
 %     hydro : struct
 %         Structure of hydro data with WAMIT data appended
 %
+arguments
+    hydro
+    filename
+    options.exCoeff = 'diffraction'
+    options.quiet = false;
+end
 
 %%
 [a,b] = size(hydro);  % Check on what is already there
@@ -33,10 +43,10 @@ elseif b >= 1
     F = b+1;
 end
 
-p = waitbar(0,'Reading WAMIT output file...');  % Progress bar
+if ~options.quiet
+    p = waitbar(0,'Reading WAMIT output file...');  % Progress bar
+end
 e = 0;
-
-if isempty(exCoeff)==1;  exCoeff = 'diffraction';  end  % 'diffraction' or 'haskind'
 
 hydro(F).code = 'WAMIT';
 [filepath,name,ext] = fileparts(filename);
@@ -121,11 +131,11 @@ for n = 1:N
         end
     end
     if ((isempty(strfind(raw{n},'HASKIND EXCITING FORCES AND MOMENTS'))==0 & ...
-            strcmp(exCoeff,'haskind')==1) |...
+            strcmp(options.exCoeff,'haskind')==1) |...
             (isempty(strfind(raw{n},'DIFFRACTION EXCITING FORCES AND MOMENTS'))==0 & ...
-            strcmp(exCoeff,'diffraction')==1) |...
+            strcmp(options.exCoeff,'diffraction')==1) |...
             (isempty(strfind(raw{n},'RESPONSE AMPLITUDE OPERATORS'))==0 & ...
-            strcmp(exCoeff,'rao')==1))
+            strcmp(options.exCoeff,'rao')==1))
         hydro(F).Nh = 0;  % Number of wave headings
         i = n+1;
         while isempty(strfind(raw{i},'Wave Heading'))==0
@@ -247,7 +257,12 @@ for n = 1:N
     end
 
     d = floor(10*n/N);  % Update progress bar every 10%, otherwise slows computation
-    if d>e  waitbar(n/N);  e = d;  end
+    if d>e
+        if ~options.quiet
+            waitbar(n/N);
+        end
+        e = d;
+    end
 end
 
 %% Scattering Force
@@ -433,5 +448,7 @@ try
         end
     end
 end
-close(p);
+if ~options.quiet
+    close(p)
+end
 end

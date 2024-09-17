@@ -1,4 +1,4 @@
-function hydro = radiationIRFSS(hydro,Omax,R2t)
+function hydro = radiationIRFSS(hydro, options)
 % Calculates the state space (SS) realization of the normalized radiation IRF.
 % If this function is used, it must be implemented after the radiationIRF function.
 % 
@@ -10,10 +10,10 @@ function hydro = radiationIRFSS(hydro,Omax,R2t)
 %     hydro : struct
 %         Structure of hydro data
 %     
-%     Omax : integer 
+%     Omax : integer (optional)
 %         Maximum order of the SS realization, the default is 10
 % 
-%     R2t : float
+%     R2t : float (optional)
 %         :math:`R^2` threshold (coefficient of determination) for the SS
 %         realization, where :math:`R^2` may range from 0 to 1, and the
 %         default is 0.95
@@ -24,18 +24,22 @@ function hydro = radiationIRFSS(hydro,Omax,R2t)
 %         Structure of hydro data with radiation IRF state space
 %         coefficients
 % 
+arguments
+    hydro
+    options.Omax = 10
+    options.R2t = 0.95
+    options.quiet = false;
+end
 
-p = waitbar(0,'Calculating state space radiation IRFs...');  % Progress bar
-
-% Set defaults if empty
-if isempty(Omax)==1;    Omax = 10;  end
-if isempty(R2t)==1;     R2t = 0.95; end
+if ~options.quiet
+    p = waitbar(0,'Calculating state space radiation IRFs...');  % Progress bar
+end
 
 t = hydro.ra_t;
 dt = t(2)-t(1);
-hydro.ss_A = zeros(sum(hydro.dof),sum(hydro.dof),Omax,Omax);
-hydro.ss_B = zeros(sum(hydro.dof),sum(hydro.dof),Omax,1);
-hydro.ss_C = zeros(sum(hydro.dof),sum(hydro.dof),1,Omax);
+hydro.ss_A = zeros(sum(hydro.dof),sum(hydro.dof),options.Omax,options.Omax);
+hydro.ss_B = zeros(sum(hydro.dof),sum(hydro.dof),options.Omax,1);
+hydro.ss_C = zeros(sum(hydro.dof),sum(hydro.dof),1,options.Omax);
 hydro.ss_D = zeros(sum(hydro.dof),sum(hydro.dof),1);
 hydro.ss_K = zeros(sum(hydro.dof),sum(hydro.dof),length(t));
 hydro.ss_conv = zeros(sum(hydro.dof),sum(hydro.dof));
@@ -77,10 +81,15 @@ for i=1:sum(hydro.dof)
             end
             
             R2 = 1-(norm(K-ss_K.')/R2i)^2;  % Calc R2 for SS IRF approx
-            if R2 >= R2t  status = 1;  break  % R2 threshold
-            elseif O == Omax  status = 2;
+            if R2 >= options.R2t
+                status = 1;
+                break  % R2 threshold
+            elseif O == options.Omax
+                status = 2;
                 break  % Max SS order threshold
-            else  O = O+1;  end  % Increase state space order
+            else 
+                O = O+1;
+            end  % Increase state space order
         end
         if R2i ~= 0.0
             hydro.ss_A(i,j,1:O,1:O) = ac;
@@ -93,8 +102,12 @@ for i=1:sum(hydro.dof)
             hydro.ss_O(i,j) = O;
         end
     end
-    waitbar(i/(sum(hydro.dof)))
+    if ~options.quiet
+        waitbar(i/(sum(hydro.dof)))
+    end
 end
-close(p)
+if ~options.quiet
+    close(p)
+end
 
 end

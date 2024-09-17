@@ -1,4 +1,4 @@
-function hydro = combineBEM(hydro)
+function hydro = combineBEM(hydro, options)
 % Combines multiple BEM outputs into one hydrodynamic ‘system.’ This function
 % requires that all BEM outputs have the same water depth, wave frequencies,
 % and wave headings. This function would be implemented following multiple
@@ -12,14 +12,23 @@ function hydro = combineBEM(hydro)
 %     hydro : [1 x n] struct
 %         Structures of hydro data that will be combined into a single
 %         structure
+% 
+%     quiet : bool (optional)
+%         Flag to turn off the waitbar.
 %
 % Returns
 % -------
 %     hydro : [1 x 1] struct
 %         Combined structure. 
 %
+arguments
+    hydro
+    options.quiet = false;
+end
 
-p = waitbar(0,'Combining multiple BEM results...');  % Progress bar
+if ~options.quiet
+    p = waitbar(0,'Combining multiple BEM results...');  % Progress bar
+end
 
 [m,n] = size(hydro);
 tol = 1e-2;
@@ -112,5 +121,7 @@ if n>1
     
 end
 hydro = addDefaultPlotVars(hydro);
-close(p);
+if ~options.quiet
+    close(p)
+end
 end

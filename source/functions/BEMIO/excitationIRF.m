@@ -1,4 +1,4 @@
-function hydro = excitationIRF(hydro,tEnd,nDt,nDw,wMin,wMax)
+function hydro = excitationIRF(hydro, options)
 % Calculates the normalized excitation impulse response function:
 % 
 % 	:math:`\overline{K}_{e,i,\theta}(t) = {\frac{1}{2\pi}}\intop_{-\infty}^{\infty}{\frac{X_i(\omega,\theta)e^{i{\omega}t}}{{\rho}g}}d\omega`
@@ -11,44 +11,51 @@ function hydro = excitationIRF(hydro,tEnd,nDt,nDw,wMin,wMax)
 %     hydro : struct
 %         Structure of hydro data
 %     
-%     tEnd : float
+%     tEnd : float (optional)
 %         Calculation range for the IRF, where the IRF is calculated from t
 %         = 0 to tEnd, and the default is 100 s
 %     
-%     nDt : float
+%     nDt : float (optional)
 %         Number of time steps in the IRF, the default is 1001 
 %     
-%     nDw : float
+%     nDw : float (optional)
 %         Number of frequency steps used in the IRF calculation
 %         (hydrodynamic coefficients are interpolated to correspond), the
 %         default is 1001
 % 
-%     wMin : float
+%     wMin : float (optional)
 %         Minimum frequency to use in the IRF calculation, the default is
 %         the minimum frequency from the BEM data
 % 
-%     wMax : float
+%     wMax : float (optional)
 %         Maximum frequency to use in the IRF calculation, the default is
 %         the maximum frequency from the BEM data
+% 
+%     quiet : bool (optional)
+%         Flag to turn off the waitbar.
 %
 % Returns
 % -------
 %     hydro : struct
 %         Structure of hydro data with excitation IRF
 % 
+arguments
+    hydro
+    options.tEnd = 100
+    options.nDt = 1001
+    options.nDw = 1001
+    options.wMin = min(hydro.w)
+    options.wMax = max(hydro.w)
+    options.quiet = false;
+end
 
-p = waitbar(0,'Calculating excitation IRFs...');  % Progress bar
-
-% Set defaults if empty
-if isempty(tEnd)==1;  tEnd = 100;           end
-if isempty(nDt)==1;    nDt = 1001;            end
-if isempty(nDw)==1;    nDw = 1001;            end
-if isempty(wMin)==1;  wMin = min(hydro.w);  end
-if isempty(wMax)==1;  wMax = max(hydro.w);  end
+if ~options.quiet
+    p = waitbar(0,'Calculating excitation IRFs...');  % Progress bar
+end
 
 % Interpolate to the given t and w
-t = linspace(-tEnd,tEnd,nDt);
-w = linspace(wMin,wMax,nDw);  
+t = linspace(-options.tEnd, options.tEnd, options.nDt);
+w = linspace(options.wMin, options.wMax, options.nDw);  
 N = sum(hydro.dof)*hydro.Nh;
 
 % Calculate the impulse response function for excitation
@@ -60,11 +67,15 @@ for i = 1:sum(hydro.dof)
         hydro.ex_K(i,j,:) = (1/pi)*trapz(w,ex_re.*cos(w.*t(:))-ex_im.*sin(w.*t(:)),2);
         n = n+1;
     end
-    waitbar(n/N)
+    if ~options.quiet
+        waitbar(n/N)
+    end
 end
 
 hydro.ex_t = t;
 hydro.ex_w = w;
-close(p);
+if ~options.quiet
+    close(p)
+end
 
 end

@@ -1,4 +1,4 @@
-function hydro = readCAPYTAINE(hydro, filename, hydrostatics_sub_dir)
+function hydro = readCAPYTAINE(hydro, filename, options)
 % Reads data from a Capytaine netcdf file
 % 
 % See ``WEC-Sim\examples\BEMIO\CAPYTAINE`` for examples of usage.
@@ -11,13 +11,23 @@ function hydro = readCAPYTAINE(hydro, filename, hydrostatics_sub_dir)
 %     filename : string
 %         Capytaine .nc output file
 %
-%     hydrostatics_sub_dir : string
+%     hydrostatics_sub_dir : string (optional)
 %         Path to directory where Hydrostatics.dat and KH.dat files are saved 
+% 
+%     quiet : bool (optional)
+%         Flag to turn off the waitbar.
 %
 % Returns
 % -------
 %     hydro : struct
 %         Structure of hydro data with Capytaine data appended
+% 
+arguments
+    hydro
+    filename
+    options.hydrostatics_sub_dir = '.'
+    options.quiet = false;
+end
 
 %% Check file for required variables
 [~,b] = size(hydro);  % Check on what is already there
@@ -27,18 +37,14 @@ elseif b >= 1
     F = b+1;
 end
 
-p = waitbar(0,'Reading Capytaine netcdf output file...'); %Progress bar
+if ~options.quiet
+    p = waitbar(0,'Reading Capytaine netcdf output file...'); %Progress bar
+end
 
 hydro(F).code = 'CAPYTAINE';
 
 [base_dir, name, ~] = fileparts(filename);
-
-if exist('hydrostatics_sub_dir','var') & ~isempty(hydrostatics_sub_dir)
-    hydrostatics_dir = append(base_dir, hydrostatics_sub_dir);
-else
-    hydrostatics_dir = base_dir;
-end
-
+hydrostatics_dir = fullfile(base_dir, options.hydrostatics_sub_dir);
 hydro(F).file = name;  % Base name
 
 % Load info (names, size, ...) of Capytaine variables, dimensions, ...
@@ -88,9 +94,6 @@ for i=1:length(req_vars)
     end
 end
 error(tmp); % only throws error if required variables are not present (tmp ~= '')
-% if ~isempty(tmp)
-%     error(tmp);
-% end
 
 %% begin parsing netcdf file to hydro struct
 % Read body names
@@ -151,7 +154,9 @@ if dof_i < 6*hydro(F).Nb || dof_r < 6*hydro(F).Nb
         'than 6*Nb (standard dofs for each body). Check input / BEM simulation.']);
 end
 
-waitbar(1/8);
+if ~options.quiet
+    waitbar(1/8);
+end
 
 %% Read simulation parameters
 % Read density, gravity and water depth
@@ -211,7 +216,9 @@ for m = 1:hydro(F).Nb
     end
 end
 
-waitbar(2/8);
+if ~options.quiet
+    waitbar(2/8);
+end
 
 %% Linear restoring stiffness [6, 6, Nb]
 % Note: Capytaine may not output this by default.
@@ -290,7 +297,9 @@ else
     end
 end
 
-waitbar(3/8);
+if ~options.quiet
+    waitbar(3/8);
+end
 
 %% Radiation added mass [6*Nb, 6*Nb, Nf]
 % Get index of variable
@@ -370,9 +379,11 @@ else
     RD = tmp;
 end
 hydro(F).B = RD;
-
 clear tmp RD
-waitbar(4/8);
+
+if ~options.quiet
+    waitbar(4/8);
+end
 
 %% Froude-Krylov force file [6*Nb,Nh,Nf];
 % Get index of variable
@@ -419,7 +430,9 @@ hydro(F).fk_ma = (hydro(F).fk_re.^2 + hydro(F).fk_im.^2).^0.5;  % Magnitude of F
 hydro(F).fk_ph = angle(hydro(F).fk_re + 1i*hydro(F).fk_im);     % Phase of Froude Krylov force
 
 clear tmp FK
-waitbar(5/8);
+if ~options.quiet
+    waitbar(5/8);
+end
 
 %% Diffraction Force (scattering) [6*Nb,Nh,Nf];
 % Get index of variable
@@ -466,7 +479,9 @@ hydro(F).sc_ma = (hydro(F).sc_re.^2 + hydro(F).sc_im.^2).^0.5;  % Magnitude of d
 hydro(F).sc_ph = angle(hydro(F).sc_re + 1i*hydro(F).sc_im);     % Phase of diffraction force
 
 clear tmp DF
-waitbar(6/8);
+if ~options.quiet
+    waitbar(6/8);
+end
 
 %% Excitation Force [6*Nb,Nh,Nf];
 % Calculate total excitation force: F_ex = F_sc + F_fk
@@ -475,7 +490,9 @@ hydro(F).ex_im = hydro(F).sc_im + hydro(F).fk_im;
 hydro(F).ex_ma = (hydro(F).ex_re.^2 + hydro(F).ex_im.^2).^0.5;  % Magnitude of excitation force
 hydro(F).ex_ph = angle(hydro(F).ex_re + 1i*hydro(F).ex_im);     % Phase of excitation force
 
-waitbar(7/8);
+if ~options.quiet
+    waitbar(7/8);
+end
 
 %% Kochin diffraction
 % necessary?
@@ -487,9 +504,11 @@ waitbar(7/8);
 hydro = normalizeBEM(hydro);  % Normalize the data according the WAMIT convention
 hydro = addDefaultPlotVars(hydro);
 
-waitbar(8/8);
+if ~options.quiet
+    waitbar(8/8);
+    close(p);
+end
 
-close(p);
 end
 
 %% functions

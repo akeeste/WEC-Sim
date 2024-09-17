@@ -1,4 +1,4 @@
-function hydro = readNEMOH(hydro,filedir)
+function hydro = readNEMOH(hydro, filedir, options)
 % Reads data from a NEMOH working folder.
 %
 % See ``WEC-Sim\examples\BEMIO\NEMOH`` for examples of usage.
@@ -19,11 +19,19 @@ function hydro = readNEMOH(hydro,filedir)
 %             - ``Results/DiffractionForce.tec`` - If simu.nonlinearHydro = 3 will be used
 %             - ``Results/FKForce.tec`` - If simu.nonlinearHydro = 3 will be used
 % 
+%     quiet : bool (optional)
+%         Flag to turn off the waitbar.
+% 
 % Returns
 % -------
 %     hydro : struct
 %         Structure of hydro data with NEMOH data appended
 %
+arguments
+    hydro
+    filedir
+    options.quiet = false;
+end
 
 %% Check filedir for required directories
 % NOTE: reads upper and lower case directories
@@ -51,7 +59,9 @@ elseif b >= 1
     F = b+1;
 end
 
-p = waitbar(0,'Reading NEMOH output file...');  % Progress bar
+if ~options.quiet
+    p = waitbar(0,'Reading NEMOH output file...');  % Progress bar
+end
 
 hydro(F).code = 'NEMOH';
 tmp = strsplit(filedir,{' ','\','/'});
@@ -115,7 +125,9 @@ for n = 1:N
         hydro(F).theta = linspace(tmp{2},tmp{3},tmp{1});  % Wave headings
     end
 end
-waitbar(1/8);
+if ~options.quiet
+    waitbar(1/8);
+end
 
 %% Hydrostatics file(s)
 for m = 1:hydro(F).Nb
@@ -136,7 +148,9 @@ for m = 1:hydro(F).Nb
     tmp = textscan(raw{4},'%s %s %f');
     hydro(F).Vo(m) = tmp{3};  % Displacement volume
 end
-waitbar(2/8);
+if ~options.quiet
+    waitbar(2/8);
+end
 
 %% KH file(s)
 for m = 1:hydro(F).Nb
@@ -153,7 +167,9 @@ for m = 1:hydro(F).Nb
         hydro(F).Khs(i,:,m) = tmp{1,1}(1:6);  % Linear restoring stiffness
     end
 end
-waitbar(3/8);
+if ~options.quiet
+    waitbar(3/8);
+end
 
 %% Radiation Coefficient file
 fileID = fopen(fullfile(resultsdir,'RadiationCoefficients.tec'));
@@ -172,9 +188,9 @@ for n = 1:N
         end
     end
 end
-waitbar(4/8);
-
-
+if ~options.quiet
+    waitbar(4/8);
+end
 
 %% Excitation Force file
 fileID = fopen(fullfile(resultsdir,'ExcitationForce.tec'));
@@ -195,7 +211,9 @@ for n = 1:N
 end
 hydro(F).ex_re = hydro(F).ex_ma.*cos(hydro(F).ex_ph);  % Real part of exciting force
 hydro(F).ex_im = hydro(F).ex_ma.*sin(hydro(F).ex_ph);  % Imaginary part of exciting force
-waitbar(5/8);
+if ~options.quiet
+    waitbar(5/8);
+end
 
 %% Diffraction Force file (scattering)
 hydro(F).sc_ma = NaN(size(hydro(F).ex_ma));
@@ -222,7 +240,9 @@ if exist(fullfile(resultsdir,'DiffractionForce.tec'),'file')==2
     hydro(F).sc_re = hydro(F).sc_ma.*cos(hydro(F).sc_ph);  % Real part of diffraction force
     hydro(F).sc_im = hydro(F).sc_ma.*sin(hydro(F).sc_ph);  % Imaginary part of diffraction force
 end
-waitbar(6/8);
+if ~options.quiet
+    waitbar(6/8);
+end
 
 %% Froude-Krylov force file
 hydro(F).fk_ma = NaN(size(hydro(F).ex_ma));
@@ -249,8 +269,9 @@ if exist(fullfile(resultsdir,'FKForce.tec'),'file')==2
     hydro(F).fk_re = hydro(F).fk_ma.*cos(hydro(F).fk_ph);  % Real part of Froude-Krylov force
     hydro(F).fk_im = hydro(F).fk_ma.*sin(hydro(F).fk_ph);  % Imaginary part of Froude-Krylov force
 end
-waitbar(7/8);
-
+if ~options.quiet
+    waitbar(7/8);
+end
 
 %================= READING KOCHIN FILES ===================%
 %clear Kochin_BVP x theta i H
@@ -368,10 +389,14 @@ if exist(fullfile(resultsdir,'Kochin.    1.dat'),'file')==2
     end
 end
 
-waitbar(8/8);
+if ~options.quiet
+    waitbar(8/8);
+end
 
 hydro = normalizeBEM(hydro);  % Normalize the data according the WAMIT convention
 hydro = addDefaultPlotVars(hydro);
 
-close(p);
+if ~options.quiet
+    close(p)
+end
 end
