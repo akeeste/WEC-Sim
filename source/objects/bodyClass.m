@@ -33,7 +33,6 @@ classdef bodyClass<handle
         centerGravity (:,1) {mustBeNumeric}         = []                    % (`3x1 float vector`) Body center of gravity [m]. Defined in the following format [x y z]. For hydrodynamic bodies this is defined in the h5 file while for nonhydrodynamic bodies this is defined by the user. Default = ``[]``.
         dof (1,1) {mustBeInteger}                   = 6                     % (`integer`) Number of degree of freedoms (DOFs). For hydrodynamic bodies this is given in the h5 file. If not defined in the h5 file, Default = ``6``.
         excitationIRF (1,:) {mustBeNumeric}         = []                    % (`vector`) Defines excitation Impulse Response Function, only used with the `waveClass` ``elevationImport`` type. Default = ``[]``.
-        flex (1,1) {mustBeInteger}                  = 0                     % (`integer`) Flag for flexible body, Options: 0 (off) or 1 (on). Default = ``0``.
         gbmDOF (1,:) {mustBeScalarOrEmpty}          = []                    % (`integer`) Number of degree of freedoms (DOFs) for generalized body mode (GBM). Default = ``[]``.
         geometryFile (1,:) {mustBeText}             = 'NONE'                % (`string`) Path to the body geometry ``.stl`` file.
         h5File (1,:) {mustBeA(h5File,{'char','string','cell'})} = ''        % (`char array, string, cell array of char arrays, or cell array or strings`) hdf5 file containing the hydrodynamic data
@@ -185,7 +184,6 @@ classdef bodyClass<handle
             mustBeMember(obj.yaw.option, [0 1])
             mustBeScalarOrEmpty(obj.yaw.threshold)
             % Check restricted/boolean variables
-            mustBeMember(obj.flex,[0 1])
             mustBeMember(obj.meanDrift,0:3)
             mustBeMember(obj.nonHydro,0:2)
             mustBeMember(obj.nonlinearHydro,0:2)
@@ -529,7 +527,6 @@ classdef bodyClass<handle
                 obj.hydroForce.(hfName).gbm.state_space.B = eye(2*obj.gbmDOF,2*obj.gbmDOF);
                 obj.hydroForce.(hfName).gbm.state_space.C = eye(2*obj.gbmDOF,2*obj.gbmDOF);
                 obj.hydroForce.(hfName).gbm.state_space.D = zeros(2*obj.gbmDOF,2*obj.gbmDOF);
-                obj.flex = 1;
                 obj.nonHydro = 0;
             end
             if obj.QTFs >= 1
