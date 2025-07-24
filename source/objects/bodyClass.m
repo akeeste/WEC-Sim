@@ -87,6 +87,7 @@ classdef bodyClass<handle
         dofEnd              = []                               % (`integer`) Index the DOF ends for (``body.number``). For WEC bodies this is given in the h5 file, but if not defined in the h5 file, Default = ``(body.number-1)*6+6``.
         dofStart            = []                               % (`integer`) Index the DOF starts for (``body.number``). For WEC bodies this is given in the h5 file, but if not defined in the h5 file, Default = ``(body.number-1)*6+1``.
         hydroData           = struct()                         % (`structure`) A structure array that defines the hydrodynamic data from BEM or user defined.
+        type                = 1                                % (`integer`) A flag that denotes what type the body is (1 = hydro, 2 = drag, 3 = flex). Determined internally by the h5 data used (or lack of h5 data input).
     end
 
     properties (SetAccess = 'private', GetAccess = 'public')% internal
@@ -128,13 +129,24 @@ classdef bodyClass<handle
                 if isstring(hydroInput) || ischar(hydroInput)
                     obj.h5File{1} = hydroInput;
                     obj.useH5 = true;
+                    if ~isempty(hydroInput)
+                        obj.type = 1; % hydro
+                    else
+                        obj.type = 2; % drag
+                    end
                 elseif iscell(hydroInput)
                     obj.h5File = hydroInput;
                     obj.useH5 = true;
+                    obj.type = 1; % hydro. variable hydro (cell h5 input) can't be flex or drag
                 elseif isstruct(hydroInput)
                     % set hydro structure, and indicate that we will not be using an h5 file
                     obj.hydroStruct = hydroInput;
                     obj.useH5 = false;
+                    if obj.hydroData.properties.dof > 6
+                        obj.type = 1; % hydro
+                    else
+                        obj.type = 3; % flex
+                    end
                 else
                     error('body.h5File must be a string, cell array of strings, or struct');
                 end
@@ -185,7 +197,6 @@ classdef bodyClass<handle
             mustBeScalarOrEmpty(obj.yaw.threshold)
             % Check restricted/boolean variables
             mustBeMember(obj.meanDrift,0:3)
-            mustBeMember(obj.nonHydro,0:2)
             mustBeMember(obj.nonlinearHydro,0:2)
             mustBeMember(obj.paraview,[0 1])
             % QTF
@@ -210,7 +221,7 @@ classdef bodyClass<handle
             % Check hydrodynamic data input
             if obj.useH5
                 for iH = 1:length(obj.h5File)
-                    if obj.nonHydro == 0
+                    if obj.type == 1
                         if ~exist(obj.h5File{iH},'file')
                             error('The hdf5 file %s does not exist',obj.h5File{iH})
                         end
@@ -276,7 +287,7 @@ classdef bodyClass<handle
                 warning(['Mean drift force cannot be used while QTF is enabled.\n' ...
                     'Turning off mean drift force calculation for body(%d).'], obj.number);
             end
-            if obj.nonHydro==0
+            if obj.type==1
                 % This method checks WEC-Sim user inputs for each hydro body and generates error messages if parameters are not properly defined for the bodyClass.
                 % Check Morison Element Inputs for option 1
                 if obj.morisonElement.option == 1
@@ -344,7 +355,7 @@ classdef bodyClass<handle
                         error('The FIR filter radiation force method is not compatible with variable hydrodynamics.');
                     end
                 end
-            elseif obj.nonHydro>0
+            elseif obj.type==3
                 % This method checks WEC-Sim user inputs for each drag or non-hydro
                 % body and generates error messages if parameters are not properly defined for the bodyClass.
                 if ~isnumeric(obj.mass) && ~isequal(obj.mass,'equilibrium')
@@ -514,6 +525,7 @@ classdef bodyClass<handle
                     obj.irfInfAddedMassAndDamping(cicTime, stateSpace, rho, B2B, iH);
             end
             if (obj.gbmDOF>0)
+                obj.type = 3;
                 obj.hydroForce.(hfName).gbm.stiffness=obj.hydroData(iH).gbm.stiffness;
                 obj.hydroForce.(hfName).gbm.damping=obj.hydroData(iH).gbm.damping;
                 obj.hydroForce.(hfName).gbm.mass_ff=obj.hydroForce.(hfName).fAddedMass(7:obj.dof,obj.dofStart+6:obj.dofEnd)+obj.hydroData(iH).gbm.mass;   % need scaling for hydro part
@@ -527,7 +539,6 @@ classdef bodyClass<handle
                 obj.hydroForce.(hfName).gbm.state_space.B = eye(2*obj.gbmDOF,2*obj.gbmDOF);
                 obj.hydroForce.(hfName).gbm.state_space.C = eye(2*obj.gbmDOF,2*obj.gbmDOF);
                 obj.hydroForce.(hfName).gbm.state_space.D = zeros(2*obj.gbmDOF,2*obj.gbmDOF);
-                obj.nonHydro = 0;
             end
             if obj.QTFs >= 1
                 if ~isfield(obj.hydroData(iH).hydro_coeffs.excitation, 'QTFs')
@@ -1225,9 +1236,9 @@ classdef bodyClass<handle
             % This method sets mass for the special cases of body at equilibrium or fixed and is used by hydroForcePre.
             if strcmp(obj.mass, 'equilibrium')
                 obj.massCalcMethod = 'equilibrium';
-                if obj.nonHydro == 0 && obj.nonlinearHydro == 0
+                if obj.type ~= 2 && obj.nonlinearHydro == 0
                     obj.mass = obj.hydroData(obj.variableHydro.hydroForceIndexInitial).properties.volume * rho;
-                elseif obj.nonHydro == 0 && obj.nonlinearHydro ~= 0
+                elseif obj.type ~= 2 && obj.nonlinearHydro ~= 0
                     cg_tmp = obj.hydroData(1).properties.centerGravity;
                     z = obj.geometry.center(:,3) + cg_tmp(3);
                     z(z>0) = 0;

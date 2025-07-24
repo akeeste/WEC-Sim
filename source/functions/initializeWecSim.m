@@ -136,13 +136,13 @@ for ii = 1:length(body(1,:))
     for kk=1:length(waves)
         body(ii).checkInputs(simu.explorer, simu.stateSpace, simu.FIR, waves(kk).typeNum);
     end
-    if body(ii).nonHydro==0
+    if body(ii).type~=2
         if numDragBodies > 0
             error('All hydro bodies must be specified before any drag bodies.')
         end
         numHydroBodies = numHydroBodies + 1;
         hydroBodLogic(ii) = 1;
-    elseif body(ii).nonHydro>0
+    else
         numDragBodies = numDragBodies + 1;
         dragBodLogic(ii) = 1;
     end
@@ -363,7 +363,7 @@ end
 
 %% Set variant subsystems options
 for ii=1:length(body(1,:))
-    if body(ii).nonHydro==0
+    if body(ii).type~=2
         % Nonlinear FK Force Variant Subsystem
         eval(['nonLinearHydro_' num2str(ii) ' = body(ii).nonlinearHydro;']);
         eval(['sv_b' num2str(ii) '_linearHydro = Simulink.Variant(''nonLinearHydro_', num2str(ii), '==0'');']);
@@ -427,6 +427,13 @@ for ii=1:length(body(1,:))
     eval(['nhbody_' num2str(ii) ' = body(ii).nonHydro;']);
     eval(['sv_b' num2str(ii) '_hydroBody = Simulink.Variant(''nhbody_' num2str(ii) '==0'');']);
     eval(['sv_b' num2str(ii) '_dragBody = Simulink.Variant(''nhbody_' num2str(ii) '>0'');']);
+end; clear ii
+
+% rigid/flex
+for ii=1:length(body(1,:))
+    eval(['bodyType_' num2str(ii) ' = body(ii).type;']);
+    eval(['sv_b' num2str(ii) '_flex = Simulink.Variant(''bodyType_' num2str(ii) '==3'');']);
+    eval(['sv_b' num2str(ii) '_rigid = Simulink.Variant(''bodyType_' num2str(ii) '~=3'');']);
 end; clear ii
 
 % variable hydrodynamics
